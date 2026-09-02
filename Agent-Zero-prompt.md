@@ -1,0 +1,9 @@
+# Zero prompt for repo setup
+
+## Existing Repo
+
+Read `AGENTS_TEMPLATE.md` and follow its four-phase working agreement. In Phase 1, inspect the repository without editing tracked files. Create `.agent/` as scratch space. Initialize the `.agent/` working files as directed by Phase 1. Next write a plan for producing a repo-specific root `AGENTS.md`; then stop for approval. In Phase 2, create the draft by replacing the placeholders before `## Working agreement`, pruning inapplicable repo-specific content, identifying the durable docs described by `## Docs policy`, and preserving the policy sections from `## Working agreement` onward unless the user explicitly changes them. In Phase 3, incorporate review feedback and use the debugging loop for problems found during review. After the user approves the draft, remove `AGENTS_TEMPLATE.md`, leave the finalized `AGENTS.md` at the repository root, and complete Phase 4 closeout.
+
+## New Repo with design specification
+
+Read `AGENTS_TEMPLATE.md` and `MY_DESIGN.md`, then follow the four-phase working agreement. In Phase 1, inspect the design and any existing repository files without editing tracked files. Create `.agent/` as scratch space. Initialize the `.agent/` working files as directed by Phase 1. Next write a plan for producing a repo-specific root `AGENTS.md`; then stop for approval. In Phase 2, create the draft by replacing the placeholders before `## Working agreement`, pruning inapplicable repo-specific content, and preserving the policy sections from `## Working agreement` onward unless the user explicitly changes them. Base the guidance on the design, but do not present unimplemented files or commands as existing functionality. In Phase 3, incorporate review feedback and use the debugging loop for problems found during review. After the user approves the draft, remove `AGENTS_TEMPLATE.md`, leave the finalized `AGENTS.md` at the repository root, and complete Phase 4 closeout.
