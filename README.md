@@ -1,3 +1,5 @@
+![Unable to load image asset](docs/assets/social-preview.png)
+
 # Socrates Loop
 
 Socrates Loop is a small set of Markdown templates for bootstrapping repository-specific instructions and a four-phase AI-assisted development workflow. It separates durable repository guidance from temporary task plans, working memory, and diagnostic artifacts.
