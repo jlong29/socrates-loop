@@ -2,7 +2,7 @@
 
 # Socrates Loop
 
-Socrates Loop is a small set of Markdown templates for bootstrapping repository-specific instructions and a four-phase AI-assisted development workflow. It separates durable repository guidance from temporary task plans, working memory, and diagnostic artifacts.
+Socrates Loop is a small set of Markdown templates for bootstrapping repository-specific instructions and a four-phase AI-assisted development workflow. It separates durable repository guidance from task plans, working memory, and diagnostic artifacts.
 
 ## How it works
 
@@ -19,7 +19,7 @@ Socrates Loop turns a long-running agent task into a sequence of inspectable, ve
 
 - **Durable guidance stays concise.** Stable repository knowledge lives in `AGENTS.md`; task-specific details do not accumulate there.
 - **Intent is inspectable before implementation.** Milestones, success criteria, invariants, and verification commands make drift visible while it is still inexpensive to correct.
-- **Working evidence has a defined home.** Reproduction commands, hypotheses, failed experiments, and bug-impact records live in temporary memory rather than being lost in chat history.
+- **Working evidence has a defined home.** Reproduction commands, hypotheses, failed experiments, and bug-impact records live in memory rather than being lost in chat history.
 - **Human approval remains part of the loop.** The workflow creates explicit checkpoints before implementation and before closeout.
 - **Useful history survives without loading everything.** Relevant closeouts can be selectively reloaded, while reusable lessons are promoted into the small set of documents future work should read first.
 
