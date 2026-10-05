@@ -29,6 +29,7 @@ This is a human-guided engineering workflow, not an autonomous orchestration sys
 
 | File | Purpose |
 | --- | --- |
+| [`install.py`](install.py) | Installs the templates in a target project and displays the zero prompts. |
 | [`AGENTS_TEMPLATE.md`](AGENTS_TEMPLATE.md) | Customizable repository guidance and the four-phase working agreement. |
 | [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md) | Bootstrap prompts for existing repositories and new repositories that begin with a design specification. |
 | [`TASK_BRIEF_TEMPLATE.md`](TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestones, success criteria, implementation plan, and decisions. |
@@ -38,27 +39,24 @@ This is a human-guided engineering workflow, not an autonomous orchestration sys
 
 ## Setup
 
+Requires Python 3 and an existing target repository:
+
 ```bash
 git clone https://github.com/jlong29/socrates-loop.git
-cd socrates-loop
-
-target_repo=/path/to/your/repo
-mkdir -p "$target_repo/docs/agent"
-
-cp AGENTS_TEMPLATE.md "$target_repo/AGENTS_TEMPLATE.md"
-cp TASK_BRIEF_TEMPLATE.md MEMORY_TEMPLATE.md "$target_repo/docs/agent/"
-
-cd "$target_repo"
-mkdir -p .agent/logs
-touch .gitignore
-grep -qxF '.agent/' .gitignore || echo '.agent/' >> .gitignore
+python3 socrates-loop/install.py /path/to/your/repo
 ```
+
+Use an absolute path or one relative to your current directory; quote paths containing spaces. Add `--dry-run` to preview changes. On Windows, use `py` if that is your Python launcher.
+
+The installer copies templates, creates `.agent/logs/`, updates `.gitignore`, and prints both zero prompts. Existing guidance and task records are preserved; conflicting templates stop installation.
 
 ---
 
 ## Getting Started
 
-Open the target repository in your coding agent, then copy the appropriate prompt from [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md): use “Existing Repo” for an established codebase or “New Repo with design specification” when starting from a design document.
+Open the target repository in your coding agent and paste the appropriate printed zero prompt: **Existing Repo** or **New Repo with design specification**. For the latter, replace `MY_DESIGN.md` with your design document's path. Both prompts are also in [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md).
+
+See the [Ask Socrates walkthrough](docs/example-walkthrough.md) for a complete task, including resuming work in a new session.
 
 Feedback and contributions are welcome. [Open an issue](https://github.com/jlong29/socrates-loop/issues/new) to report a problem or suggest an improvement, or [submit a pull request](https://github.com/jlong29/socrates-loop/pulls) with a proposed change.
 
