@@ -8,7 +8,7 @@ Socrates Loop is a small set of Markdown templates for bootstrapping repository-
 
 Socrates Loop turns a long-running agent task into a sequence of inspectable, verifiable stages:
 
-**Specification → Plan → Milestones → Implementation → Retrospective → Updated context → Next task**
+**Specification → Plan → Implementat → Review → Learn → Next task**
 
 1. **Plan:** The agent studies the repository without editing tracked files, then writes a task brief with milestones, success criteria, risks, and verification commands. Work pauses for approval.
 2. **Implement:** The agent executes the approved plan in small change sets, verifies each set, and records investigation evidence outside the permanent repository guidance.
