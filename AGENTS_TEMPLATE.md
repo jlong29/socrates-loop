@@ -2,7 +2,7 @@
 
 You are an AI coding agent operating inside the `<REPO_NAME>` repository.
 
-This file is **always-on guidance**. Keep it short, stable, and high-signal. If something is task-specific, it belongs in `.agent/TASK_BRIEF.md`, `.agent/MEMORY.md`, or other `.agent/` scratch artifacts, not here.
+This file is **always-on guidance**. Keep it short, stable, and high-signal. If something is task-specific, it belongs in `.agent/TASK_BRIEF.md`, `.agent/MEMORY.md`, or other `.agent/` artifacts, not here.
 
 ---
 
@@ -157,7 +157,7 @@ For every bug affecting behavior defined as significant above:
 Goal: build repo-aware understanding and produce one planning deliverable.
 
 Rules:
-- At the start of a new task, initialize the scratch workspace:
+- At the start of a new task, initialize the workspace:
   1. Run `mkdir -p .agent/logs`.
   2. If `.agent/TASK_BRIEF.md` or `.agent/MEMORY.md` already exists, treat it as possible unfinished work and do not overwrite it without user confirmation.
   3. Otherwise, copy:
@@ -174,7 +174,7 @@ Rules:
 **Phase 1 deliverable:**
 - Write the plan to `.agent/TASK_BRIEF.md` following the template and augmenting it where warranted.
 
-`.agent/` is **untracked** and exists specifically for this ephemeral brief. The brief may be updated in Phase 2.
+`.agent/` is **untracked**. The brief may be updated in Phase 2.
 
 At the end of Phase 1:
 - Ensure `.agent/TASK_BRIEF.md` is up to date.
@@ -234,15 +234,14 @@ At completion:
    - e.g. <task_slug> = YYYYMMDD_HHMM_<short_topic>
 4. Move `.agent/TASK_BRIEF.md` to `docs/agent/tasks/<task_slug>/`.
 5. Move `.agent/MEMORY.md` to `docs/agent/tasks/<task_slug>/`.
-6. Empty `.agent/logs/` (or delete the directory contents).
-7. Write the closeout into `docs/agent/tasks/<task_slug>/CLOSEOUT.md`.
-8. Verify that `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` no longer exist, `.agent/logs/` is empty, and the archive contains `TASK_BRIEF.md`, `MEMORY.md`, and `CLOSEOUT.md`.
+6. Write the closeout into `docs/agent/tasks/<task_slug>/CLOSEOUT.md`.
+7. Verify that `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` no longer exist, and the archive contains `TASK_BRIEF.md`, `MEMORY.md`, and `CLOSEOUT.md`.
 
 ---
 
-## .agent/ folder policy (scratch only)
+## .agent/ folder policy
 
-`.agent/` is **untracked** and is intended as **scratch space only**. It should be safe to delete at any time, and it should be **cleared at task closeout**.
+`.agent/` is **untracked**.
 
 ### Purpose
 1. **Task-related documents** most notably TASK_BRIEF.md
