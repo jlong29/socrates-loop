@@ -12,7 +12,10 @@
 ## Failed experiments
 -
 
-## Gotchas discovered (promote at closeout)
+## Gotchas discovered (reconcile with maintained owners)
+
+Candidates for documentation reconciliation, not automatic additions. Keep the supporting evidence here; update affected guidance under the maintenance policy.
+
 -
 
 ## Bug impact traceability

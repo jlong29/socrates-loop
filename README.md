@@ -10,20 +10,34 @@ Socrates Loop turns a long-running agent task into a sequence of inspectable, ve
 
 **Specification → Plan → Implement → Review → Learn → Next task**
 
-1. **Plan:** The agent studies the repository without editing tracked files, then writes a task brief with milestones, success criteria, risks, and verification commands. Work pauses for approval.
+1. **Plan:** The agent studies the repository, relevant maintained docs and prior task closeouts without editing tracked files, then synthesizes a task brief with applicable constraints, milestones, success criteria, risks, and verification commands. Work pauses for approval.
 2. **Implement:** The agent executes the approved plan in small change sets, verifies each set, and records investigation evidence outside the permanent repository guidance.
 3. **Review and debug:** The user reviews the result. The agent handles failures with a reproduce, hypothesize, test, and surgical-fix loop.
-4. **Close out:** The agent records decisions and verification evidence, promotes durable lessons into repository documentation, and archives a sanitized retrospective for future tasks.
+4. **Close out:** The agent reconciles affected documentation, replacing superseded guidance and preserving unique historical evidence. It archives sanitized task records and a closeout that supports future Phase 1 planning, then marks the task complete.
 
 ## Why it works
 
-- **Durable guidance stays concise.** Stable repository knowledge lives in `AGENTS.md`; task-specific details do not accumulate there.
+- **Documentation has bounded owners.** `AGENTS.md` holds the working agreement and essential invariants. Maintained docs explain the current repository; each topic has an owner, and superseded guidance is replaced rather than accumulated.
 - **Intent is inspectable before implementation.** Milestones, success criteria, invariants, and verification commands make drift visible while it is still inexpensive to correct.
 - **Working evidence has a defined home.** Reproduction commands, hypotheses, failed experiments, and bug-impact records live in memory rather than being lost in chat history.
 - **Human approval remains part of the loop.** The workflow creates explicit checkpoints before implementation and before closeout.
-- **Useful history survives without loading everything.** Relevant closeouts can be selectively reloaded, while reusable lessons are promoted into the small set of documents future work should read first.
+- **Useful history informs the next plan.** Relevant closeouts supply prior decisions, outcomes and unresolved follow-ups for the next task brief. Deeper archived task records are read only to resolve material questions; current instructions remain in their maintained owners.
 
 This is a human-guided engineering workflow, not an autonomous orchestration system. Its purpose is to help an agent work for longer without losing the goal, repeating mistakes, or silently changing important assumptions.
+
+## Documentation roles
+
+The ownership table in `AGENTS.md` maps roles to repository-specific files or sections. The maintenance rules live under its working agreement and apply throughout the task.
+
+| Layer | Purpose |
+|---|---|
+| `AGENTS.md` | Working rules, essential constraints and documentation routing |
+| Maintained documentation, including `README.md` | Current behavior, procedures, architecture and project state, as applicable |
+| `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` | Active task scope/state and supporting investigation |
+| Archived `CLOSEOUT.md` | Historical task context used primarily to construct a new task brief in Phase 1 |
+| Deeper archived task records | Supporting detail when a closeout leaves a material question unanswered |
+
+Small repositories can use README sections for several maintained roles. Separate project-state, architecture, operations, metrics or design documents are optional. Closeout reviews affected owners; it does not require every task to add permanent guidance.
 
 ## Repository contents
 
