@@ -10,18 +10,18 @@ Socrates Loop turns a long-running agent task into a sequence of inspectable, ve
 
 **Specification → Plan → Implement → Review → Learn → Next task**
 
-1. **Plan:** The agent studies the repository, relevant maintained docs and prior task closeouts without editing tracked files, then synthesizes a task brief with applicable constraints, milestones, success criteria, risks, and verification commands. Work pauses for approval.
+1. **Plan:** The agent studies the repository, relevant maintained docs and any completed task closeouts without editing tracked files, then writes a task brief with constraints, milestones, success criteria, risks, and verification commands. Work pauses for approval.
 2. **Implement:** The agent executes the approved plan in small change sets, verifies each set, and records investigation evidence outside the permanent repository guidance.
 3. **Review and debug:** The user reviews the result. The agent handles failures with a reproduce, hypothesize, test, and surgical-fix loop.
 4. **Close out:** The agent reconciles affected documentation, replacing superseded guidance and preserving unique historical evidence. It archives sanitized task records and a closeout that supports future Phase 1 planning, then marks the task complete.
 
 ## Why it works
 
-- **Documentation has bounded owners.** `AGENTS.md` holds the working agreement and essential invariants. Maintained docs explain the current repository; each topic has an owner, and superseded guidance is replaced rather than accumulated.
+- **Documentation has bounded owners.** Each topic has an owner; superseded guidance is replaced rather than accumulated.
 - **Intent is inspectable before implementation.** Milestones, success criteria, invariants, and verification commands make drift visible while it is still inexpensive to correct.
 - **Working evidence has a defined home.** Reproduction commands, hypotheses, failed experiments, and bug-impact records live in memory rather than being lost in chat history.
 - **Human approval remains part of the loop.** The workflow creates explicit checkpoints before implementation and before closeout.
-- **Useful history informs the next plan.** Relevant closeouts supply prior decisions, outcomes and unresolved follow-ups for the next task brief. Deeper archived task records are read only to resolve material questions; current instructions remain in their maintained owners.
+- **Useful history informs the next plan.** Relevant closeouts supply decisions, outcomes and follow-ups; deeper archives resolve questions left unanswered.
 
 This is a human-guided engineering workflow, not an autonomous orchestration system. Its purpose is to help an agent work for longer without losing the goal, repeating mistakes, or silently changing important assumptions.
 

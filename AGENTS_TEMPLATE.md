@@ -13,8 +13,8 @@ When bootstrapping a new repo, the agent should:
 1. Read the user’s project brief and the repo tree.
 2. Replace the placeholders in the sections **before** `## Working agreement`.
 3. Preserve all policy sections from `## Working agreement` onward unless the user explicitly changes them.
-4. Generalize or prune sections that do not apply.
-5. Complete `## Documentation ownership` using existing files or sections. Remove unused optional roles; propose new documents only for distinct needs. Preserve the maintenance policy under `## Working agreement`.
+4. Generalize or prune inapplicable repo-specific sections.
+5. Complete `## Documentation ownership` using existing files or sections. Remove unused optional roles; propose new documents only for distinct needs that existing owners cannot serve.
 
 ---
 
@@ -136,7 +136,7 @@ Optional additional checks:
 
 ## Documentation ownership
 
-Each maintained topic has one authoritative documentation location. Other documents may summarize and link to it. Use existing files or sections; separate files are not required for every role.
+Give each maintained topic one authoritative owner. Map the roles below to existing files or sections and remove unused optional rows; a small repository may use README sections for several roles.
 
 | Document or section | Owns | Does not own |
 |---|---|---|
@@ -153,7 +153,7 @@ Each maintained topic has one authoritative documentation location. Other docume
 | `<design path#section, if needed>` | Approved design, constraints and acceptance gates | Live task progress |
 | `<results path#section, if needed>` | Historical findings and supporting evidence | Current operating instructions |
 
-Replace optional rows with applicable owners or remove them. A small repository may use README sections for several maintained roles. Keep project state distinct from task state: summarize and link to active tasks rather than copying their plans.
+Project state summarizes and links to active tasks rather than copying their plans.
 
 ---
 
@@ -196,7 +196,7 @@ Rules:
   3. Otherwise, copy:
      - `docs/agent/TASK_BRIEF_TEMPLATE.md` to `.agent/TASK_BRIEF.md`
      - `docs/agent/MEMORY_TEMPLATE.md` to `.agent/MEMORY.md`
-- Construct the task brief from relevant maintained guidance and prior closeouts according to `Prior task context (selective)` under `## Docs policy`.
+- Construct the task brief from relevant maintained guidance and, when available, prior closeouts according to `Prior task context (selective)` under `## Docs policy`.
 - Do not edit code or tracked files in this phase.
 - Use ≤10 shell commands and keep output concise (avoid long listings).
 - Restate goal + success criteria.
@@ -244,8 +244,8 @@ Goal: Summarize completed work and clean up.
 After the user approves the Phase 3 result, the agent should:
 1. Update `.agent/TASK_BRIEF.md`: set **Phase** to `Phase 4`, **State** to `in progress`, and **Last updated** to the current date and time.
 2. Review this `AGENTS.md` and the task's acceptance criteria and verification evidence.
-3. Apply `Documentation maintenance - all phases` to affected owners. Reconcile current guidance and state, preserve unique historical evidence, and verify affected instructions and links. Do not require new permanent guidance when none is warranted.
-4. Produce a **closeout summary** (short, high-signal), using `.agent/MEMORY.md` and `.agent/TASK_BRIEF.md` as the sources of truth. Make it useful to a future Phase 1 agent constructing a task brief:
+3. Apply `Documentation maintenance - all phases` to affected owners; no new permanent guidance is required when none is warranted.
+4. Produce a **closeout summary** from `.agent/MEMORY.md` and `.agent/TASK_BRIEF.md`, concise but sufficient for future Phase 1 planning:
    - Outcome and completed scope
    - Decisions made (and why)
    - New invariants/gotchas discovered
@@ -257,19 +257,15 @@ After the user approves the Phase 3 result, the agent should:
       - Epoch / initiative: `<name or none>`
       - Prior closeouts reviewed: `<exact paths or none>`
       - Recommended successor tasks: `<task slugs or short descriptions, or none>`
-5. Follow `Cleanup at task closeout` below. Mark the task complete only after reconciliation and archival verification succeed; record any deferred work explicitly.
+5. Complete `Cleanup at task closeout` below.
 
 #### Cleanup at task closeout
 At completion:
 1. Before archiving, remove credentials, secrets, private URLs, sensitive user data, and unnecessary machine-specific paths.
-2. Confirm the documentation reconciliation and closeout summary above are ready.
-3. Create a folder `docs/agent/tasks/<task_slug>` under `docs/agent/tasks`.
-   - e.g. <task_slug> = YYYYMMDD_HHMM_<short_topic>
-4. Move `.agent/TASK_BRIEF.md` to `docs/agent/tasks/<task_slug>/`.
-5. Move `.agent/MEMORY.md` to `docs/agent/tasks/<task_slug>/`.
-6. Write the closeout into `docs/agent/tasks/<task_slug>/CLOSEOUT.md`.
-7. Verify that `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` no longer exist, and the archive contains `TASK_BRIEF.md`, `MEMORY.md`, and `CLOSEOUT.md`.
-8. In the archived `TASK_BRIEF.md`, set **State** to `complete` and update **Last updated**. If closeout fails, leave the task incomplete and report the remaining work and record locations.
+2. Create `docs/agent/tasks/<task_slug>/`, using a slug such as `YYYYMMDD_HHMM_<short_topic>`.
+3. Move `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` there and write `CLOSEOUT.md` alongside them.
+4. Verify all three archive files exist and the two active task files no longer exist.
+5. Only after reconciliation and archival verification succeed, set **State** to `complete` and update **Last updated** in the archived task brief. If closeout fails, leave the task incomplete and report the remaining work and record locations.
 
 ---
 
@@ -282,7 +278,7 @@ At completion:
 2. **User-provided artifacts for debugging** (logs, traces, perf output) that the agent should inspect.
 3. **Agent working memory externalization** when the chat context window is under pressure.
 
-> Record new gotchas in `.agent/MEMORY.md`. Reconcile reusable findings with their maintained owners under `Documentation maintenance - all phases`; do not wait for closeout to correct guidance made misleading by implementation changes.
+> Record new gotchas in `.agent/MEMORY.md` and apply `Documentation maintenance - all phases` as guidance changes.
 
 ### Flat structure (preferred)
 - `.agent/TASK_BRIEF.md` — compact task description, success criteria, and progress notes
@@ -330,18 +326,18 @@ After externalizing:
 ## Docs policy (protect the context window)
 Do NOT read the entire docs tree by default.
 
-Use `Documentation ownership` to select relevant maintained guidance. `AGENTS.md` supplies the working agreement; maintained docs explain the current repository; closeouts provide historical task context; deeper archived records support specific investigations. Superseded specs and plans are historical evidence, not current instructions.
+Use `Documentation ownership` to select relevant maintained guidance. Treat superseded specs and plans as historical evidence, not current instructions.
 
-In Phases 2–3, use the active task brief alongside maintained guidance. Revisit history when a new question requires it. If an applicable topic has no owner, identify an existing section or propose a focused owner in the task plan; do not create a full documentation suite by default.
+In Phases 2–3, use the active task brief alongside maintained guidance; revisit history when a new question requires it. If a topic has no owner, propose an existing section or a focused new document in the task plan.
 
 ### Prior task context (selective)
 
-During Phase 1, use relevant closeouts to construct the task-specific `.agent/TASK_BRIEF.md`. Reconcile their findings with maintained documentation and the current repository. Historical decisions must still apply before being carried forward.
+Skip archive review until a task has been completed and closed out. Thereafter, use relevant closeouts during Phase 1 to construct `.agent/TASK_BRIEF.md`, checking their findings against maintained guidance and the current repository.
 
 1. Use the scope specified by the user or `.agent/TASK_BRIEF.md`: explicit closeout paths, the last N relevant closeouts, or all closeouts associated with a named epoch or initiative.
 2. If no scope is provided, inspect archive names first and read no more than the three most recent closeouts that are clearly relevant.
 3. Read `CLOSEOUT.md` files first, newest to oldest. Read deeper archived task records only when a closeout leaves a question material to the plan unanswered.
-4. Record the closeouts reviewed in the task brief and synthesize applicable decisions, constraints, gotchas and unresolved follow-ups there, with evidence links. Keep supporting investigation in memory; do not copy whole histories. If no closeouts are relevant, record none.
+4. Record reviewed paths and synthesize applicable decisions, constraints, gotchas and unresolved follow-ups in the task brief, with evidence links. Keep supporting investigation in memory. If none are relevant, record none.
 5. Do not scan or load the entire task archive by default.
 
 For a large multi-task epoch, process closeouts in bounded batches and maintain a compact synthesis in `.agent/MEMORY.md`.
