@@ -36,6 +36,9 @@
 ## Relevant files (why)
 - `path/to/file.py` — <why it matters>
 
+## Documentation impact
+- <affected owner path#section and expected change, or none with reason; record final dispositions in CLOSEOUT.md>
+
 ## Implementation plan
 1. <step 1>
 2. <step 2>

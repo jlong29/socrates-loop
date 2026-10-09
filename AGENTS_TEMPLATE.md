@@ -7,14 +7,14 @@ This file is **always-on guidance**. Keep it short, stable, and high-signal. If 
 ---
 
 ## How to instantiate this template in a new repo
-This template is meant to be converted into a repo-specific `AGENTS.md` as one of the first tasks in a repository.
+This template is meant to be converted into a repo-specific `AGENTS.md` as the first task in a repository.
 
 When bootstrapping a new repo, the agent should:
 1. Read the user’s project brief and the repo tree.
 2. Replace the placeholders in the sections **before** `## Working agreement`.
 3. Preserve all policy sections from `## Working agreement` onward unless the user explicitly changes them.
-4. Generalize or prune sections that do not apply.
-5. Identify the repo’s durable docs that play the roles described in `## Docs policy`.
+4. Generalize or prune inapplicable repo-specific sections.
+5. Complete `## Documentation ownership` using existing files or sections. Remove unused optional roles; propose new documents only for distinct needs that existing owners cannot serve.
 
 ---
 
@@ -134,6 +134,29 @@ Optional additional checks:
 
 ---
 
+## Documentation ownership
+
+Give each maintained topic one authoritative owner. Map the roles below to existing files or sections and remove unused optional rows; a small repository may use README sections for several roles.
+
+| Document or section | Owns | Does not own |
+|---|---|---|
+| `AGENTS.md` | Agent working agreement, essential invariants and documentation routing | Task status, detailed manuals and historical results |
+| `README.md` | Setup, common usage and navigation | Investigation chronology |
+| `.agent/TASK_BRIEF.md` | Active task scope, acceptance criteria and execution state | Project-wide reference documentation |
+| `.agent/MEMORY.md` | Task investigation and verification evidence | A duplicate task plan |
+| `docs/agent/tasks/<task_slug>/CLOSEOUT.md` | Historical task outcomes, decisions, verification and follow-ups | Current operating instructions |
+| Other archived task records | Supporting plans, investigation and evidence for deeper dives | Current guidance or active task state |
+| `<current-state path#section, if needed>` | Project-wide active work, accepted deliverables, unresolved issues and next boundary | Detailed task plans and completed-work chronology |
+| `<architecture path#section, if needed>` | Implementation responsibilities and entrypoints | Operating procedures and task history |
+| `<runbook path#section, if needed>` | Current procedures and operating contracts | Experiment chronology |
+| `<metrics path#section, if needed>` | Definitions, comparability and interpretation | Individual run results |
+| `<design path#section, if needed>` | Approved design, constraints and acceptance gates | Live task progress |
+| `<results path#section, if needed>` | Historical findings and supporting evidence | Current operating instructions |
+
+Project state summarizes and links to active tasks rather than copying their plans.
+
+---
+
 ## Significant behavior
 
 For traceability, treat a bug as significant when it can affect:
@@ -143,6 +166,16 @@ For traceability, treat a bug as significant when it can affect:
 ---
 
 ## Working agreement (four-phase execution)
+
+### Documentation maintenance - all phases
+
+Use the documentation ownership table to identify affected documents and read their relevant sections before editing.
+
+- **Maintain scope:** Update the owning document; other documents may summarize and link. Leave unaffected documents alone.
+- **Replace before adding:** Replace superseded guidance and consolidate duplication. Incorporate reusable lessons into existing sections wherever possible.
+- **Separate guidance from history:** Maintained docs describe current behavior, procedures and state. Closeouts preserve task outcomes, decisions and verification; deeper task records preserve supporting detail. Preserve unique historical evidence before removing it from maintained docs.
+- **Keep documents consistent:** Update affected guidance when behavior changes; synchronize status at implementation start, handoff and closeout. Verify affected instructions and links agree.
+- **Reconcile before completion:** At closeout, review affected owners and record updates, justified no-change conclusions and unresolved follow-ups. Repeat a bounded review at major milestones or when drift becomes apparent.
 
 ### Bug impact traceability (all phases)
 
@@ -163,11 +196,11 @@ Rules:
   3. Otherwise, copy:
      - `docs/agent/TASK_BRIEF_TEMPLATE.md` to `.agent/TASK_BRIEF.md`
      - `docs/agent/MEMORY_TEMPLATE.md` to `.agent/MEMORY.md`
-- Load prior task context according to `Prior task context (selective)` under `## Docs policy`.
+- Construct the task brief from relevant maintained guidance and, when available, prior closeouts according to `Prior task context (selective)` under `## Docs policy`.
 - Do not edit code or tracked files in this phase.
 - Use ≤10 shell commands and keep output concise (avoid long listings).
 - Restate goal + success criteria.
-- Identify the minimal relevant files and why.
+- Identify the minimal relevant files and affected documentation owners, and why.
 - Propose a plan + verification commands.
 - Stop and ask before proceeding.
 
@@ -208,34 +241,31 @@ When debugging a failure or unexpected behavior found during review, follow this
 ### Phase 4 — Task completion / closeout procedure
 Goal: Summarize completed work and clean up.
 
-When the task is complete (as defined in `.agent/TASK_BRIEF.md`), the agent should:
-1. Update `.agent/TASK_BRIEF.md`: set **Phase** to `Phase 4`, **State** to `complete`, and **Last updated** to the current date and time.
-2. Review this `AGENTS.md`.
-3. Produce a **closeout summary** (short, high-signal), using `.agent/MEMORY.md` and `.agent/TASK_BRIEF.md` as the sources of truth:
+After the user approves the Phase 3 result, the agent should:
+1. Update `.agent/TASK_BRIEF.md`: set **Phase** to `Phase 4`, **State** to `in progress`, and **Last updated** to the current date and time.
+2. Review this `AGENTS.md` and the task's acceptance criteria and verification evidence.
+3. Apply `Documentation maintenance - all phases` to affected owners; no new permanent guidance is required when none is warranted.
+4. Produce a **closeout summary** from `.agent/MEMORY.md` and `.agent/TASK_BRIEF.md`, concise but sufficient for future Phase 1 planning:
+   - Outcome and completed scope
    - Decisions made (and why)
    - New invariants/gotchas discovered
    - New/changed commands (CLI flags, scripts)
    - TODOs / follow-ups
    - Verification evidence (commands run)
+   - Documentation reconciliation: affected owners, updates or justified no-change conclusions, and unresolved follow-ups
    - Context lineage:
       - Epoch / initiative: `<name or none>`
       - Prior closeouts reviewed: `<exact paths or none>`
       - Recommended successor tasks: `<task slugs or short descriptions, or none>`
-4. Update repo docs **only when the information is stable and reusable**:
-   - Update `AGENTS.md` for durable workflow/invariants only.
-   - Update the applicable durable documentation identified during template instantiation.
-5. Follow the procedure defined in `Cleanup at task closeout` (defined below)
+5. Complete `Cleanup at task closeout` below.
 
 #### Cleanup at task closeout
 At completion:
 1. Before archiving, remove credentials, secrets, private URLs, sensitive user data, and unnecessary machine-specific paths.
-2. Summarize “gotchas / decisions / commands / TODOs” and promote them to durable docs (see `Task completion / closeout procedure`).
-3. Create a folder `docs/agent/tasks/<task_slug>` under `docs/agent/tasks`.
-   - e.g. <task_slug> = YYYYMMDD_HHMM_<short_topic>
-4. Move `.agent/TASK_BRIEF.md` to `docs/agent/tasks/<task_slug>/`.
-5. Move `.agent/MEMORY.md` to `docs/agent/tasks/<task_slug>/`.
-6. Write the closeout into `docs/agent/tasks/<task_slug>/CLOSEOUT.md`.
-7. Verify that `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` no longer exist, and the archive contains `TASK_BRIEF.md`, `MEMORY.md`, and `CLOSEOUT.md`.
+2. Create `docs/agent/tasks/<task_slug>/`, using a slug such as `YYYYMMDD_HHMM_<short_topic>`.
+3. Move `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` there and write `CLOSEOUT.md` alongside them.
+4. Verify all three archive files exist and the two active task files no longer exist.
+5. Only after reconciliation and archival verification succeed, set **State** to `complete` and update **Last updated** in the archived task brief. If closeout fails, leave the task incomplete and report the remaining work and record locations.
 
 ---
 
@@ -248,7 +278,7 @@ At completion:
 2. **User-provided artifacts for debugging** (logs, traces, perf output) that the agent should inspect.
 3. **Agent working memory externalization** when the chat context window is under pressure.
 
-> Policy: when the agent learns a new *gotcha* during Phase 2, it should record it in `.agent/MEMORY.md` and only promote it to durable docs during closeout.
+> Record new gotchas in `.agent/MEMORY.md` and apply `Documentation maintenance - all phases` as guidance changes.
 
 ### Flat structure (preferred)
 - `.agent/TASK_BRIEF.md` — compact task description, success criteria, and progress notes
@@ -267,7 +297,7 @@ The task brief is the authoritative record of the task’s scope and execution s
 
 Memory is a compact investigation notebook for evidence that supports the task brief: reproduction commands, hypotheses, failed experiments, debugging evidence, gotchas, bug-impact records, and verification results. Keep it to **≤200 lines** when possible and use concise bullets.
 
-Do not duplicate the task plan or current task status in memory. Promote durable findings to repository documentation during closeout.
+Do not duplicate the task plan or current task status in memory. Findings are candidates for documentation reconciliation, not automatic additions to permanent guidance.
 
 ### Log naming convention
 Store logs as:
@@ -296,28 +326,18 @@ After externalizing:
 ## Docs policy (protect the context window)
 Do NOT read the entire docs tree by default.
 
-Open docs only when needed, in this priority order:
-1. The repo’s current workflow / operational workflow doc
-2. The repo’s module / architecture map doc
-3. The repo’s metrics / diagnostics doc
-4. The repo’s experiment log / change log / results log
+Use `Documentation ownership` to select relevant maintained guidance. Treat superseded specs and plans as historical evidence, not current instructions.
 
-Treat these as historical unless explicitly requested:
-- old specs
-- old work plans
-- archived project-state headers
-- other superseded planning docs
-
-If the repo does not yet have durable docs in these roles, ask the user which files are intended to fill them.
+In Phases 2–3, use the active task brief alongside maintained guidance; revisit history when a new question requires it. If a topic has no owner, propose an existing section or a focused new document in the task plan.
 
 ### Prior task context (selective)
 
-When the current task continues earlier work:
+Skip archive review until a task has been completed and closed out. Thereafter, use relevant closeouts during Phase 1 to construct `.agent/TASK_BRIEF.md`, checking their findings against maintained guidance and the current repository.
 
 1. Use the scope specified by the user or `.agent/TASK_BRIEF.md`: explicit closeout paths, the last N relevant closeouts, or all closeouts associated with a named epoch or initiative.
 2. If no scope is provided, inspect archive names first and read no more than the three most recent closeouts that are clearly relevant.
-3. Read `CLOSEOUT.md` files first, newest to oldest. Do not read archived `TASK_BRIEF.md` or `MEMORY.md` files unless a closeout identifies unresolved detail needed for the current task.
-4. Record the closeouts reviewed and carry only relevant decisions, invariants, gotchas, and follow-ups into the current task brief or memory.
+3. Read `CLOSEOUT.md` files first, newest to oldest. Read deeper archived task records only when a closeout leaves a question material to the plan unanswered.
+4. Record reviewed paths and synthesize applicable decisions, constraints, gotchas and unresolved follow-ups in the task brief, with evidence links. Keep supporting investigation in memory. If none are relevant, record none.
 5. Do not scan or load the entire task archive by default.
 
 For a large multi-task epoch, process closeouts in bounded batches and maintain a compact synthesis in `.agent/MEMORY.md`.

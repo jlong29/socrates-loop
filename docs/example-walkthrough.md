@@ -28,6 +28,8 @@ if __name__ == "__main__":
 
 Follow the README's [Setup](../README.md#setup) and [Getting Started](../README.md#getting-started) instructions for this example repository. Use `README.md` for reusable project notes, and complete the bootstrap task's closeout before starting the task below.
 
+For this example, the README's `Usage` section initially says: “Search matches capitalization exactly.” It owns current search behavior; the task archive owns the history of changing that behavior. No separate architecture or operations document is needed.
+
 ## 1. Plan
 
 Give your agent this task:
@@ -47,6 +49,9 @@ The agent compares `python3 socrates.py know` with `python3 socrates.py KNOW` an
 
 ## Fixed invariants (do not change)
 - Preserve the original quote text and order.
+
+## Documentation impact
+- README.md#usage — replace the case-sensitive matching instruction.
 
 ## Milestones
 - [ ] Fix matching and verify all five checks.
@@ -107,11 +112,11 @@ The investigation belongs in `.agent/MEMORY.md`. An excerpt after successful ver
   no earlier history examined.
 - Follow-up: none.
 
-## Gotchas discovered (promote at closeout)
+## Gotchas discovered (reconcile with maintained owners)
 - Normalize text for comparison; return the original quote for display.
 ```
 
-Before handing back, the agent updates the task brief: the first milestone is complete, **Phase** is `Phase 3`, **State** is `awaiting review`, and **Next steps** identifies review and closeout. It updates **Last updated** to match.
+Before handing back, the agent replaces the obsolete sentence in `README.md#usage` with: “Search ignores capitalization and preserves the original quote text and order. With no query it prints both quotes; with no match it prints nothing.” It keeps failure evidence in memory rather than appending a second, conflicting usage rule. It updates the task brief: the first milestone is complete, **Phase** is `Phase 3`, **State** is `awaiting review`, and **Next steps** identifies review and closeout. It updates **Last updated** to match.
 
 ## 3. Review in a new session
 
@@ -129,7 +134,7 @@ Once you are satisfied, reply:
 
 > Approved. Complete Phase 4 closeout.
 
-The agent marks the task complete, records the reusable search behavior in the example repository's `README.md`, and archives the task records according to `AGENTS.md`:
+The agent enters Phase 4 with the task still in progress. It checks the updated `README.md#usage` against the verified behavior, confirms no working-agreement change is needed, and preserves the old failure evidence in the task records. It archives those records according to `AGENTS.md`:
 
 ```text
 docs/agent/tasks/<task_slug>/
@@ -138,7 +143,7 @@ docs/agent/tasks/<task_slug>/
   CLOSEOUT.md
 ```
 
-The closeout should be useful on its own. A shortened example:
+After verifying the archive, the agent marks the archived task brief complete. The closeout should give a future planning agent enough context to identify applicable decisions without reading the full investigation. A shortened example:
 
 ```markdown
 # Closeout: quote search
@@ -150,8 +155,11 @@ The closeout should be useful on its own. A shortened example:
 - Decision: casefold only for comparison; display the original strings.
 - Verification: python3 check_socrates.py — 5 checks passed;
   python3 socrates.py KNOW — first quote, original capitalization.
-- Durable documentation: README.md records matching and display behavior,
-  including empty-query and no-match behavior.
+- Documentation reconciliation: replaced the obsolete case-sensitive rule
+  in README.md#usage; confirmed matching, display, empty-query and no-match
+  instructions agree with verification. AGENTS.md needs no change because
+  the working agreement and essential invariants are unchanged. Historical
+  failure evidence remains in this closeout and MEMORY.md.
 - Follow-ups: none required for this fix.
 - Context lineage: no epoch; no prior closeouts reviewed.
 - Suggested successor: display the source alongside each quote.
@@ -159,6 +167,6 @@ The closeout should be useful on its own. A shortened example:
 
 For that next task, replace `<task_slug>` with the actual archive folder and ask:
 
-> Add the source alongside each quote. Follow `AGENTS.md` and first read `docs/agent/tasks/<task_slug>/CLOSEOUT.md`. Preserve the search behavior established by that task.
+> Add the source alongside each quote. Follow `AGENTS.md`. In Phase 1, read `README.md#usage` and `docs/agent/tasks/<task_slug>/CLOSEOUT.md`, reconcile them with the current code, and construct `.agent/TASK_BRIEF.md`. Preserve the search behavior established by that task. Stop for plan approval.
 
-The next task starts with the earlier decision and its verification evidence available to inspect.
+The new brief records the closeout path and carries forward the still-applicable matching and display constraints, linking to the earlier verification evidence. It identifies `README.md#usage` as the owner affected by the new output format. The agent opens the old memory or task brief only if the closeout leaves a question material to the plan unanswered. Implementation then uses the new task brief alongside maintained guidance.
