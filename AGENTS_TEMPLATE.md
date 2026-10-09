@@ -7,7 +7,7 @@ This file is **always-on guidance**. Keep it short, stable, and high-signal. If 
 ---
 
 ## How to instantiate this template in a new repo
-This template is meant to be converted into a repo-specific `AGENTS.md` as one of the first tasks in a repository.
+This template is meant to be converted into a repo-specific `AGENTS.md` as the first task in a repository.
 
 When bootstrapping a new repo, the agent should:
 1. Read the user’s project brief and the repo tree.
