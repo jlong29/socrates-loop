@@ -63,31 +63,15 @@ Use targeted commands instead (e.g., `ls <dir>`, `find <dir> -maxdepth 2 ...`, `
 
 ---
 
-## Core workflow (minimal commands)
+## Core workflow (essential agent commands)
 
-### Build / prepare / ingest
+`README.md` or a focused runbook owns setup and workflow procedures. Keep only commands essential to routine agent work here and under `Tests (default)`; link to the owner for full instructions. Any repeated command is a quick reference and must stay consistent with its owner.
+
+- Workflow instructions: `<owning path#section>`
+
 ```bash
-<insert canonical setup, build, or data-preparation command>
+<essential agent command, if needed; otherwise remove this block>
 ```
-
-### Main run / train / serve path
-```bash
-<insert canonical primary workflow command>
-```
-
-### Secondary workflow(s)
-```bash
-<insert canonical fine-tune / batch / deploy / report command>
-```
-
-### Evaluate / validate
-```bash
-<insert canonical evaluation, smoke-test, or validation command>
-```
-
-Notes:
-- <call out required invariants, e.g. data layout assumptions, required companions, default modes, etc.>
-- <call out important defaults or caveats.>
 
 ---
 
@@ -264,8 +248,9 @@ At completion:
 1. Before archiving, remove credentials, secrets, private URLs, sensitive user data, and unnecessary machine-specific paths.
 2. Create `docs/agent/tasks/<task_slug>/`, using a slug such as `YYYYMMDD_HHMM_<short_topic>`.
 3. Move `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` there and write `CLOSEOUT.md` alongside them.
-4. Verify all three archive files exist and the two active task files no longer exist.
-5. Only after reconciliation and archival verification succeed, set **State** to `complete` and update **Last updated** in the archived task brief. If closeout fails, leave the task incomplete and report the remaining work and record locations.
+4. Retain evidence needed to understand the closeout as concise summaries or sanitized excerpts in the archive, or link to a durable location accessible to future readers. Do not rely on untracked `.agent/logs/` as the only source.
+5. Repair relative links after moving files and verify references from their archived locations. Verify all three archive files exist and the two active task files no longer exist.
+6. Only after reconciliation and archival verification succeed, set **State** to `complete` and update **Last updated** in the archived task brief. If closeout fails, leave the task incomplete and report the remaining work and record locations.
 
 ---
 
