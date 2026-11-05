@@ -16,6 +16,15 @@ When bootstrapping a new repo, the agent should:
 4. Generalize or prune inapplicable repo-specific sections.
 5. Complete `## Documentation ownership` using existing files or sections. Remove unused optional roles; propose new documents only for distinct needs that existing owners cannot serve.
 
+### Bootstrap acceptance checks
+
+Keep these checks in the bootstrap task records; omit these instantiation instructions from the finalized `AGENTS.md`.
+
+- **Command evidence:** For each recommended build/test command, establish prerequisites, working directory, environment, test discovery scope, and failure reporting. Inspect relevant wrappers or generators; this is a bounded review of recommended commands, not a general code audit. Distinguish source inspection from executed checks and state what remains unverified. If a wrapper can mask failure, document the limitation and a reliable alternative where available.
+- **Documentation and findings:** Reconcile command instructions and known limitations with their existing documentation owner. Keep essential references in `AGENTS.md`. Apply the existing significant-bug traceability policy to observed defects even when repair is outside bootstrap scope; retain unresolved follow-ups without claiming untested behavior works. For a design-only repository, distinguish planned commands from existing functionality.
+- **Provenance:** Before editing or deleting staging, record SHA-256 hashes of root `AGENTS_TEMPLATE.md` and both installed task templates in the task brief. Compare the installed-file hashes with any supplied by the installer and resolve mismatches before proceeding. Retain supplied source revision, input state, and source-prompt hash; record unavailable identity explicitly, never substitute the target repository's revision. Carry this provenance into the closeout.
+- **Review:** Verify the complete shared policy against the staged template, check repository-specific claims and local references, and present command evidence, unverified assumptions, and unresolved defects separately. Confirm instructions agree with their documentation owners before requesting approval.
+
 ---
 
 ## Mission

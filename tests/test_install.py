@@ -1,12 +1,15 @@
 """Exercise the installer CLI in isolated project directories."""
 
+import hashlib
 import os
 from pathlib import Path
+import runpy
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -44,10 +47,10 @@ class InstallTests(unittest.TestCase):
             (self.source / name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(REPO / name, self.source / name)
 
-    def run_installer(self, *args):
+    def run_installer(self, *args, env=None, installer=None):
         return subprocess.run(
-            [sys.executable, "-B", str(self.source / "install.py"), *map(str, args)],
-            cwd=self.caller, capture_output=True, text=True, encoding="utf-8",
+            [sys.executable, "-B", str(installer or self.source / "install.py"), *map(str, args)],
+            cwd=self.caller, env=env, capture_output=True, text=True, encoding="utf-8",
         )
 
     def assert_success(self, result):
@@ -68,10 +71,55 @@ class InstallTests(unittest.TestCase):
         self.assertFalse((self.target / ".agent/TASK_BRIEF.md").exists())
         self.assertFalse((self.target / ".agent/MEMORY.md").exists())
         prompts = (self.source / "Agent-Zero-prompt.md").read_text(encoding="utf-8")
-        self.assertIn(prompts.strip(), result.stdout)
+        for section in prompts.split("\n## ")[1:]:
+            heading, body = section.split("\n", 1)
+            printed = result.stdout.split("## " + heading + "\n", 1)[1].split("\n## ", 1)[0]
+            self.assertIn(body.strip(), printed)
+            self.assertIn("Source revision: unavailable", printed)
+            for destination, source in DEPLOYED.items():
+                digest = hashlib.sha256((self.source / source).read_bytes()).hexdigest()
+                self.assertIn(digest + "  " + destination, printed)
+            digest = hashlib.sha256((self.source / "Agent-Zero-prompt.md").read_bytes()).hexdigest()
+            self.assertIn("Source Agent-Zero-prompt.md SHA-256: " + digest, printed)
         self.assertIn("## Existing Repo", result.stdout)
         self.assertIn("## New Repo with design specification", result.stdout)
         self.assertIn(str(self.target), result.stdout)
+
+    def test_install_without_git_still_reports_content_hashes(self):
+        result = self.run_installer(self.target, env=dict(os.environ, PATH=""))
+        self.assert_success(result)
+        self.assertIn("Source revision: unavailable", result.stdout)
+        digest = hashlib.sha256((self.target / "AGENTS_TEMPLATE.md").read_bytes()).hexdigest()
+        self.assertIn(digest + "  AGENTS_TEMPLATE.md", result.stdout)
+
+    def test_source_identity_reports_input_changes_and_rejects_enclosing_repo(self):
+        identify = runpy.run_path(str(REPO / "install.py"))["source_identity"]
+        revision = "a" * 40
+        for changes, state in (("", "clean"), (" M templates/AGENTS_TEMPLATE.md", "modified or untracked"),
+                               ("?? Agent-Zero-prompt.md", "modified or untracked")):
+            with self.subTest(changes=changes):
+                with patch("subprocess.check_output", side_effect=[str(self.source), revision, changes]):
+                    self.assertEqual(identify(self.source), (revision, state))
+        with patch("subprocess.check_output", return_value=str(self.root)):
+            self.assertEqual(identify(self.source), ("unavailable", "unavailable"))
+
+    @unittest.skipUnless(shutil.which("git"), "Git is needed to check source identity")
+    def test_source_revision_comes_from_installer_not_caller_or_target(self):
+        root = subprocess.run(
+            ["git", "-C", str(REPO), "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True,
+        )
+        if root.returncode or Path(root.stdout.strip()).resolve() != REPO:
+            self.skipTest("Source checkout has no independent Git identity")
+        revision = subprocess.check_output(
+            ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True,
+        ).strip()
+        # These unrelated repositories have no revision and must not supply identity.
+        for path in (self.caller, self.target):
+            subprocess.run(["git", "init", "--quiet", str(path)], check=True, capture_output=True)
+        result = self.run_installer(self.target, installer=REPO / "install.py")
+        self.assert_success(result)
+        self.assertEqual(result.stdout.count("Source revision: " + revision), 2)
 
     def test_relative_target_is_resolved_from_the_callers_directory(self):
         result = self.run_installer("../target project")
@@ -281,7 +329,10 @@ class InstallTests(unittest.TestCase):
             handle.write("\n## Another zero prompt\n\nA newly available prompt.\n")
         result = self.run_installer(self.target)
         self.assert_success(result)
-        self.assertIn("## Another zero prompt\n\nA newly available prompt.", result.stdout)
+        printed = result.stdout.split("## Another zero prompt\n", 1)[1]
+        self.assertIn("A newly available prompt.", printed)
+        self.assertIn("Source revision: unavailable", printed)
+        self.assertIn("Installed-file SHA-256:", printed)
 
     def test_help_and_required_target(self):
         result = self.run_installer("--help")

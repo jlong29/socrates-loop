@@ -82,7 +82,11 @@ If the checkout already has `AGENTS.md` and installed task templates, use the up
 
 ## Getting Started
 
-Open the target repository in your coding agent and paste the appropriate printed zero prompt: **Existing Repo** or **New Repo with design specification**. For the latter, replace `MY_DESIGN.md` with your design document's path. Both prompts are also in [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md).
+Open the target repository in your coding agent and paste the appropriate printed zero prompt, including its source provenance: **Existing Repo** or **New Repo with design specification**. For the latter, replace `MY_DESIGN.md` with your design document's path. Both prompts are also in [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md).
+
+Each printed prompt includes the source revision when Git metadata is available, the modification state of the installer/prompt/canonical templates, and SHA-256 hashes of the installed files and source prompt. Hashes identify the supplied bytes even for modified or unpacked sources. The agent verifies installed-file hashes and retains provenance in the task brief and closeout; no separate installation metadata file is created. When using a static prompt, the agent records installed-template hashes and marks unavailable source identity explicitly.
+
+Bootstrap includes a bounded review of recommended build/test commands, including failure reporting. The agent reconciles findings with existing documentation owners and distinguishes executed checks, source inspection, and unverified assumptions before asking for review.
 
 See the [Ask Socrates walkthrough](docs/example-walkthrough.md) for a complete task, including resuming work in a new session.
 
@@ -118,7 +122,32 @@ Run the installer regression suite from this checkout:
 python3 -B -m unittest discover -s tests -v
 ```
 
-Tests use isolated temporary projects and do not update another repository. The Git ignore-behavior test requires Git and skips when it is unavailable.
+Tests use isolated temporary projects and do not update another repository. Git-dependent checks skip when Git is unavailable; evaluation-fixture checks require Bash and Python 3. These tests verify installer and fixture behavior, not the quality of an agent's generated guidance.
+
+### Bootstrap evaluation
+
+Use fresh copies of the [small fixture](tests/fixtures/bootstrap/README.md) to evaluate bootstrap instructions. From this checkout, prepare each trial:
+
+```bash
+bootstrap_eval_dir="$(mktemp -d)"
+cp -R tests/fixtures/bootstrap/. "$bootstrap_eval_dir/"
+# For the control trial, also run this before installation:
+# cp tests/fixtures/bootstrap-control.sh "$bootstrap_eval_dir/check.sh"
+git -C "$bootstrap_eval_dir" init -q
+python3 install.py "$bootstrap_eval_dir"
+```
+
+Open only the temporary project in a fresh agent session and use the printed Existing Repo prompt. Follow normal plan, review, and closeout approvals for a documentation-only bootstrap; do not supply the expected findings below as hints. Run both variants repeatedly with the same model/settings and fixed Socrates Loop source inputs. Record outcomes and commands in evaluation task records; do not infer reliability from one successful run.
+
+| Review criterion | Expected evidence |
+|---|---|
+| Command prerequisites | README Testing explains `EXAMPLE_VALUE=42`, repository-root execution, and discovery under `checks/`. |
+| Failure reporting | Default fixture: identify the wrapper's masked failure, provide the direct unittest command, and retain the defect/follow-up under the existing bug policy. Control: recognize correct failure propagation without inventing a wrapper defect. |
+| Evidence and scope | Distinguish source inspection from executed checks and unresolved assumptions; preserve application/test scripts during the documentation-only bootstrap. |
+| Documentation ownership | Update existing README sections and keep essential references in AGENTS; this fixture needs no separate diagnostics/results documents. |
+| Installation and closeout | Preserve shared policy and task templates, retain source provenance, remove only staging after approval, and archive all three task records with working links. |
+
+Without `EXAMPLE_VALUE`, the one test fails. The default wrapper returns 0 afterward; the control and direct unittest command return nonzero. With `EXAMPLE_VALUE=42`, all three succeed. The regression suite verifies these fixture properties; agent evaluation remains a separate exercise.
 
 Feedback and contributions are welcome. [Open an issue](https://github.com/jlong29/socrates-loop/issues/new) to report a problem or suggest an improvement, or [submit a pull request](https://github.com/jlong29/socrates-loop/pulls) with a proposed change.
 
