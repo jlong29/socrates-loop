@@ -44,11 +44,11 @@ Small repositories can use README sections for several maintained roles. Separat
 | File | Purpose |
 | --- | --- |
 | [`install.py`](install.py) | Installs the templates in a target project and displays the zero prompts. |
-| [`AGENTS_TEMPLATE.md`](AGENTS_TEMPLATE.md) | Customizable repository guidance and the four-phase working agreement. |
+| [`templates/AGENTS_TEMPLATE.md`](templates/AGENTS_TEMPLATE.md) | Customizable repository guidance and the four-phase working agreement. |
 | [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md) | Bootstrap prompts for existing repositories and new repositories that begin with a design specification. |
 | [`Update-prompt.md`](Update-prompt.md) | Instructions and acceptance checks for updating an installed integration as a normal task. |
-| [`TASK_BRIEF_TEMPLATE.md`](TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestones, success criteria, implementation plan, and decisions. |
-| [`MEMORY_TEMPLATE.md`](MEMORY_TEMPLATE.md) | Compact investigation evidence, gotchas, bug-impact records, and verification results. |
+| [`templates/TASK_BRIEF_TEMPLATE.md`](templates/TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestones, success criteria, implementation plan, and decisions. |
+| [`templates/MEMORY_TEMPLATE.md`](templates/MEMORY_TEMPLATE.md) | Compact investigation evidence, gotchas, bug-impact records, and verification results. |
 | [`docs/assets/social-preview.png`](docs/assets/social-preview.png) | Source image for the repository’s GitHub social preview. |
 | [`LICENSE`](LICENSE) | MIT license terms. |
 
@@ -63,7 +63,20 @@ python3 socrates-loop/install.py /path/to/your/repo
 
 Use an absolute path or one relative to your current directory; quote paths containing spaces. Add `--dry-run` to preview changes. On Windows, use `py` if that is your Python launcher.
 
-The installer copies templates, creates `.agent/logs/`, updates `.gitignore`, and prints both zero prompts. Existing guidance and task records are preserved; conflicting templates stop installation.
+The installer reads canonical sources from its checkout's `templates/` directory. It copies `AGENTS_TEMPLATE.md` to the target root as temporary bootstrap input and the task brief and memory templates to `docs/agent/`, creates `.agent/logs/`, updates `.gitignore`, and prints both zero prompts. Existing guidance and task records are preserved; conflicting templates stop installation.
+
+### Installing into this repository
+
+Use the same installer from the Socrates Loop checkout:
+
+```bash
+python3 install.py . --dry-run
+python3 install.py .
+```
+
+Follow the Existing Repo Zero prompt below. Canonical files under `templates/` remain generic distribution inputs. Root `AGENTS.md` and the templates under `docs/agent/` are this repository's installed integration. Bootstrap creates repository-specific guidance from the staged root `AGENTS_TEMPLATE.md`; approved closeout removes only that staging file. The checkout remains usable for installing into other repositories afterward.
+
+If the checkout already has `AGENTS.md` and installed task templates, use the update workflow for changes to its integration. Re-running initial setup can recreate root staging after bootstrap; it preserves existing guidance and rejects conflicting templates, so it is not an integration updater.
 
 ---
 
@@ -93,7 +106,9 @@ Give the agent this request, replacing the source path:
 
 The installer remains the initial setup path. Updating needs no prior upstream checkout or installation-state database: the agent reviews differences between the current integration and the selected source. The plan identifies local customizations and seeks approval for their disposition.
 
-An agent may also obtain the source from the public repository at one identified revision and follow the same prompt. A local checkout makes the exact reference available without network access during the task. Keep the source contents fixed until the update is complete.
+An agent may also obtain the source from the public repository at one identified revision and follow the same prompt. A local checkout makes the exact reference available without network access during the task. Keep the source inputs fixed until the update is complete.
+
+For self-updates, finish and close out the source-template development task first. Then start a separate integration-update task using this checkout as the source. Record hashes of the three canonical templates and the source README and prompts at planning time, and recheck them before handing off for review. Only installed integration files and normal task records change during that update. If source inputs need further edits, return to planning and establish a new fixed reference before continuing. See [the update prompt](Update-prompt.md#phase-1-plan-the-update) for source-layout compatibility and provenance checks.
 
 ## Development checks
 

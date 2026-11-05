@@ -50,7 +50,7 @@ def install(target, dry_run=False):
 
     # Read all inputs and check all destinations before changing the project.
     templates = [
-        (target / destination, (source / name).read_bytes())
+        (target / destination, (source / "templates" / name).read_bytes())
         for name, destination in TEMPLATES
     ]
     prompts = (source / "Agent-Zero-prompt.md").read_text(encoding="utf-8")

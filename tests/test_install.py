@@ -11,9 +11,9 @@ import unittest
 
 REPO = Path(__file__).resolve().parents[1]
 DEPLOYED = {
-    "AGENTS_TEMPLATE.md": "AGENTS_TEMPLATE.md",
-    "docs/agent/TASK_BRIEF_TEMPLATE.md": "TASK_BRIEF_TEMPLATE.md",
-    "docs/agent/MEMORY_TEMPLATE.md": "MEMORY_TEMPLATE.md",
+    "AGENTS_TEMPLATE.md": "templates/AGENTS_TEMPLATE.md",
+    "docs/agent/TASK_BRIEF_TEMPLATE.md": "templates/TASK_BRIEF_TEMPLATE.md",
+    "docs/agent/MEMORY_TEMPLATE.md": "templates/MEMORY_TEMPLATE.md",
 }
 
 
@@ -41,6 +41,7 @@ class InstallTests(unittest.TestCase):
         for directory in (self.source, self.target, self.caller):
             directory.mkdir()
         for name in ("install.py", "Agent-Zero-prompt.md", *DEPLOYED.values()):
+            (self.source / name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(REPO / name, self.source / name)
 
     def run_installer(self, *args):
@@ -78,6 +79,58 @@ class InstallTests(unittest.TestCase):
         self.assertTrue((self.target / "AGENTS_TEMPLATE.md").is_file())
         self.assertEqual(list(self.caller.iterdir()), [])
         self.assertFalse((self.source / "docs").exists())
+
+    def test_self_bootstrap_preserves_source_for_external_installation(self):
+        originals = snapshot(self.source / "templates")
+        preserved = {
+            "AGENTS.md": "Existing repository guidance\n",
+            ".agent/TASK_BRIEF.md": "Active bootstrap task\n",
+            ".agent/MEMORY.md": "Evidence\n",
+            ".agent/logs/run.log": "Log\n",
+            "docs/agent/tasks/earlier/CLOSEOUT.md": "History\n",
+        }
+        for name, contents in preserved.items():
+            path = self.source / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(contents)
+        self.assert_success(self.run_installer(self.source))
+        for destination, source in DEPLOYED.items():
+            self.assertEqual((self.source / destination).read_bytes(),
+                             (self.source / source).read_bytes())
+        before = snapshot(self.source)
+        self.assert_success(self.run_installer(self.source))
+        self.assertEqual(snapshot(self.source), before)
+
+        # Simulate the agent's approved bootstrap and closeout cleanup.
+        staging = self.source / "AGENTS_TEMPLATE.md"
+        guidance = self.source / "AGENTS.md"
+        guidance.write_text(guidance.read_text() + staging.read_text().replace(
+            "<REPO_NAME>", "socrates-loop"))
+        staging.unlink()
+        after_bootstrap = snapshot(self.source)
+        self.assert_success(self.run_installer(self.target))
+        self.assertEqual(snapshot(self.source), after_bootstrap)
+        self.assertEqual(snapshot(self.source / "templates"), originals)
+        for name, contents in preserved.items():
+            self.assertTrue((self.source / name).read_text().startswith(contents))
+        for destination, source in DEPLOYED.items():
+            self.assertEqual((self.target / destination).read_bytes(),
+                             (self.source / source).read_bytes())
+
+    def test_self_install_dry_run_changes_nothing(self):
+        before = snapshot(self.source)
+        self.assert_success(self.run_installer("--dry-run", self.source))
+        self.assertEqual(snapshot(self.source), before)
+
+    def test_self_install_conflict_changes_nothing(self):
+        staging = self.source / "AGENTS_TEMPLATE.md"
+        staging.write_text("Customized staging input\n")
+        before = snapshot(self.source)
+        for args in ((self.source,), ("--dry-run", self.source)):
+            result = self.run_installer(*args)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("Refusing to overwrite", result.stderr)
+            self.assertEqual(snapshot(self.source), before)
 
     def test_dry_run_does_not_modify_the_project(self):
         (self.target / "README.md").write_text("Project documentation\n")
@@ -200,7 +253,7 @@ class InstallTests(unittest.TestCase):
                 self.assertEqual(snapshot(outside), original)
 
     def test_missing_source_file_stops_before_any_changes(self):
-        for name in ("MEMORY_TEMPLATE.md", "Agent-Zero-prompt.md"):
+        for name in ("templates/MEMORY_TEMPLATE.md", "Agent-Zero-prompt.md"):
             with self.subTest(name=name):
                 path = self.source / name
                 contents = path.read_bytes()

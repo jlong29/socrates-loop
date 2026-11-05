@@ -7,7 +7,7 @@ This file is **always-on guidance**. Keep it short, stable, and high-signal. If 
 ---
 
 ## How to instantiate this template in a new repo
-This template is meant to be converted into a repo-specific `AGENTS.md` as the first task in a repository.
+The installer copies this distribution template to the target root as `AGENTS_TEMPLATE.md`. Create a separate repo-specific `AGENTS.md` from that staged copy as the first task in a repository. Preserve any existing repository guidance. Remove only the staged root copy at approved closeout; never customize or remove the canonical `templates/AGENTS_TEMPLATE.md` in the source checkout, including during self-installation.
 
 When bootstrapping a new repo, the agent should:
 1. Read the user’s project brief and the repo tree.
