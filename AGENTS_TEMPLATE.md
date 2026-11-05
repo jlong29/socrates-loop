@@ -258,6 +258,8 @@ At completion:
 
 `.agent/` is **untracked**.
 
+Updating this repository's Socrates Loop integration is a normal task under this working agreement. Start only when no other task is active, and use the selected Socrates Loop checkout's `Update-prompt.md` for update-specific scope and verification. The update task's own records remain active through implementation and review.
+
 ### Purpose
 1. **Task-related documents** most notably TASK_BRIEF.md
 2. **User-provided artifacts for debugging** (logs, traces, perf output) that the agent should inspect.

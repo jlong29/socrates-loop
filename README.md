@@ -46,6 +46,7 @@ Small repositories can use README sections for several maintained roles. Separat
 | [`install.py`](install.py) | Installs the templates in a target project and displays the zero prompts. |
 | [`AGENTS_TEMPLATE.md`](AGENTS_TEMPLATE.md) | Customizable repository guidance and the four-phase working agreement. |
 | [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md) | Bootstrap prompts for existing repositories and new repositories that begin with a design specification. |
+| [`Update-prompt.md`](Update-prompt.md) | Instructions and acceptance checks for updating an installed integration as a normal task. |
 | [`TASK_BRIEF_TEMPLATE.md`](TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestones, success criteria, implementation plan, and decisions. |
 | [`MEMORY_TEMPLATE.md`](MEMORY_TEMPLATE.md) | Compact investigation evidence, gotchas, bug-impact records, and verification results. |
 | [`docs/assets/social-preview.png`](docs/assets/social-preview.png) | Source image for the repository’s GitHub social preview. |
@@ -71,6 +72,38 @@ The installer copies templates, creates `.agent/logs/`, updates `.gitignore`, an
 Open the target repository in your coding agent and paste the appropriate printed zero prompt: **Existing Repo** or **New Repo with design specification**. For the latter, replace `MY_DESIGN.md` with your design document's path. Both prompts are also in [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md).
 
 See the [Ask Socrates walkthrough](docs/example-walkthrough.md) for a complete task, including resuming work in a new session.
+
+## Updating an installation
+
+Updating Socrates Loop is a Socrates Loop task in the target repository. Its existing four-phase working agreement supplies planning, approval, implementation, review, and closeout. Start when no other task is active; the update itself has normal task records.
+
+Refresh or select a local Socrates Loop checkout, then open your coding agent in the target repository. For example:
+
+```bash
+cd /path/to/socrates-loop
+git pull --ff-only
+cd /path/to/your/repo
+```
+
+Give the agent this request, replacing the source path:
+
+> Update this repository's Socrates Loop integration using `/path/to/socrates-loop` as the source. Read that checkout's `Update-prompt.md` and follow this repository's existing four-phase working agreement. Begin with a Phase 1 task brief and stop for approval. Preserve repository-specific guidance and history; explicitly propose any structural changes or replacement of customized policy.
+
+[The update prompt](Update-prompt.md) supplies update-specific scope and acceptance checks. The agent compares the installed policy and templates directly with the selected source, adapts repository-specific sections such as documentation ownership, and iterates on verification before presenting the result for review. The task brief and closeout record the source revision, changes, and evidence.
+
+The installer remains the initial setup path. Updating needs no prior upstream checkout or installation-state database: the agent reviews differences between the current integration and the selected source. The plan identifies local customizations and seeks approval for their disposition.
+
+An agent may also obtain the source from the public repository at one identified revision and follow the same prompt. A local checkout makes the exact reference available without network access during the task. Keep the source contents fixed until the update is complete.
+
+## Development checks
+
+Run the installer regression suite from this checkout:
+
+```bash
+python3 -B -m unittest discover -s tests -v
+```
+
+Tests use isolated temporary projects and do not update another repository. The Git ignore-behavior test requires Git and skips when it is unavailable.
 
 Feedback and contributions are welcome. [Open an issue](https://github.com/jlong29/socrates-loop/issues/new) to report a problem or suggest an improvement, or [submit a pull request](https://github.com/jlong29/socrates-loop/pulls) with a proposed change.
 
