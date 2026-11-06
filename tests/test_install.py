@@ -1,19 +1,22 @@
 """Exercise the installer CLI in isolated project directories."""
 
+import hashlib
 import os
 from pathlib import Path
+import runpy
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 REPO = Path(__file__).resolve().parents[1]
 DEPLOYED = {
-    "AGENTS_TEMPLATE.md": "AGENTS_TEMPLATE.md",
-    "docs/agent/TASK_BRIEF_TEMPLATE.md": "TASK_BRIEF_TEMPLATE.md",
-    "docs/agent/MEMORY_TEMPLATE.md": "MEMORY_TEMPLATE.md",
+    "AGENTS_TEMPLATE.md": "templates/AGENTS_TEMPLATE.md",
+    "docs/agent/TASK_BRIEF_TEMPLATE.md": "templates/TASK_BRIEF_TEMPLATE.md",
+    "docs/agent/MEMORY_TEMPLATE.md": "templates/MEMORY_TEMPLATE.md",
 }
 
 
@@ -41,12 +44,13 @@ class InstallTests(unittest.TestCase):
         for directory in (self.source, self.target, self.caller):
             directory.mkdir()
         for name in ("install.py", "Agent-Zero-prompt.md", *DEPLOYED.values()):
+            (self.source / name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(REPO / name, self.source / name)
 
-    def run_installer(self, *args):
+    def run_installer(self, *args, env=None, installer=None):
         return subprocess.run(
-            [sys.executable, "-B", str(self.source / "install.py"), *map(str, args)],
-            cwd=self.caller, capture_output=True, text=True, encoding="utf-8",
+            [sys.executable, "-B", str(installer or self.source / "install.py"), *map(str, args)],
+            cwd=self.caller, env=env, capture_output=True, text=True, encoding="utf-8",
         )
 
     def assert_success(self, result):
@@ -67,10 +71,55 @@ class InstallTests(unittest.TestCase):
         self.assertFalse((self.target / ".agent/TASK_BRIEF.md").exists())
         self.assertFalse((self.target / ".agent/MEMORY.md").exists())
         prompts = (self.source / "Agent-Zero-prompt.md").read_text(encoding="utf-8")
-        self.assertIn(prompts.strip(), result.stdout)
+        for section in prompts.split("\n## ")[1:]:
+            heading, body = section.split("\n", 1)
+            printed = result.stdout.split("## " + heading + "\n", 1)[1].split("\n## ", 1)[0]
+            self.assertIn(body.strip(), printed)
+            self.assertIn("Source revision: unavailable", printed)
+            for destination, source in DEPLOYED.items():
+                digest = hashlib.sha256((self.source / source).read_bytes()).hexdigest()
+                self.assertIn(digest + "  " + destination, printed)
+            digest = hashlib.sha256((self.source / "Agent-Zero-prompt.md").read_bytes()).hexdigest()
+            self.assertIn("Source Agent-Zero-prompt.md SHA-256: " + digest, printed)
         self.assertIn("## Existing Repo", result.stdout)
         self.assertIn("## New Repo with design specification", result.stdout)
         self.assertIn(str(self.target), result.stdout)
+
+    def test_install_without_git_still_reports_content_hashes(self):
+        result = self.run_installer(self.target, env=dict(os.environ, PATH=""))
+        self.assert_success(result)
+        self.assertIn("Source revision: unavailable", result.stdout)
+        digest = hashlib.sha256((self.target / "AGENTS_TEMPLATE.md").read_bytes()).hexdigest()
+        self.assertIn(digest + "  AGENTS_TEMPLATE.md", result.stdout)
+
+    def test_source_identity_reports_input_changes_and_rejects_enclosing_repo(self):
+        identify = runpy.run_path(str(REPO / "install.py"))["source_identity"]
+        revision = "a" * 40
+        for changes, state in (("", "clean"), (" M templates/AGENTS_TEMPLATE.md", "modified or untracked"),
+                               ("?? Agent-Zero-prompt.md", "modified or untracked")):
+            with self.subTest(changes=changes):
+                with patch("subprocess.check_output", side_effect=[str(self.source), revision, changes]):
+                    self.assertEqual(identify(self.source), (revision, state))
+        with patch("subprocess.check_output", return_value=str(self.root)):
+            self.assertEqual(identify(self.source), ("unavailable", "unavailable"))
+
+    @unittest.skipUnless(shutil.which("git"), "Git is needed to check source identity")
+    def test_source_revision_comes_from_installer_not_caller_or_target(self):
+        root = subprocess.run(
+            ["git", "-C", str(REPO), "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True,
+        )
+        if root.returncode or Path(root.stdout.strip()).resolve() != REPO:
+            self.skipTest("Source checkout has no independent Git identity")
+        revision = subprocess.check_output(
+            ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True,
+        ).strip()
+        # These unrelated repositories have no revision and must not supply identity.
+        for path in (self.caller, self.target):
+            subprocess.run(["git", "init", "--quiet", str(path)], check=True, capture_output=True)
+        result = self.run_installer(self.target, installer=REPO / "install.py")
+        self.assert_success(result)
+        self.assertEqual(result.stdout.count("Source revision: " + revision), 2)
 
     def test_relative_target_is_resolved_from_the_callers_directory(self):
         result = self.run_installer("../target project")
@@ -78,6 +127,58 @@ class InstallTests(unittest.TestCase):
         self.assertTrue((self.target / "AGENTS_TEMPLATE.md").is_file())
         self.assertEqual(list(self.caller.iterdir()), [])
         self.assertFalse((self.source / "docs").exists())
+
+    def test_self_bootstrap_preserves_source_for_external_installation(self):
+        originals = snapshot(self.source / "templates")
+        preserved = {
+            "AGENTS.md": "Existing repository guidance\n",
+            ".agent/TASK_BRIEF.md": "Active bootstrap task\n",
+            ".agent/MEMORY.md": "Evidence\n",
+            ".agent/logs/run.log": "Log\n",
+            "docs/agent/tasks/earlier/CLOSEOUT.md": "History\n",
+        }
+        for name, contents in preserved.items():
+            path = self.source / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(contents)
+        self.assert_success(self.run_installer(self.source))
+        for destination, source in DEPLOYED.items():
+            self.assertEqual((self.source / destination).read_bytes(),
+                             (self.source / source).read_bytes())
+        before = snapshot(self.source)
+        self.assert_success(self.run_installer(self.source))
+        self.assertEqual(snapshot(self.source), before)
+
+        # Simulate the agent's approved bootstrap and closeout cleanup.
+        staging = self.source / "AGENTS_TEMPLATE.md"
+        guidance = self.source / "AGENTS.md"
+        guidance.write_text(guidance.read_text() + staging.read_text().replace(
+            "<REPO_NAME>", "socrates-loop"))
+        staging.unlink()
+        after_bootstrap = snapshot(self.source)
+        self.assert_success(self.run_installer(self.target))
+        self.assertEqual(snapshot(self.source), after_bootstrap)
+        self.assertEqual(snapshot(self.source / "templates"), originals)
+        for name, contents in preserved.items():
+            self.assertTrue((self.source / name).read_text().startswith(contents))
+        for destination, source in DEPLOYED.items():
+            self.assertEqual((self.target / destination).read_bytes(),
+                             (self.source / source).read_bytes())
+
+    def test_self_install_dry_run_changes_nothing(self):
+        before = snapshot(self.source)
+        self.assert_success(self.run_installer("--dry-run", self.source))
+        self.assertEqual(snapshot(self.source), before)
+
+    def test_self_install_conflict_changes_nothing(self):
+        staging = self.source / "AGENTS_TEMPLATE.md"
+        staging.write_text("Customized staging input\n")
+        before = snapshot(self.source)
+        for args in ((self.source,), ("--dry-run", self.source)):
+            result = self.run_installer(*args)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("Refusing to overwrite", result.stderr)
+            self.assertEqual(snapshot(self.source), before)
 
     def test_dry_run_does_not_modify_the_project(self):
         (self.target / "README.md").write_text("Project documentation\n")
@@ -200,7 +301,7 @@ class InstallTests(unittest.TestCase):
                 self.assertEqual(snapshot(outside), original)
 
     def test_missing_source_file_stops_before_any_changes(self):
-        for name in ("MEMORY_TEMPLATE.md", "Agent-Zero-prompt.md"):
+        for name in ("templates/MEMORY_TEMPLATE.md", "Agent-Zero-prompt.md"):
             with self.subTest(name=name):
                 path = self.source / name
                 contents = path.read_bytes()
@@ -228,7 +329,10 @@ class InstallTests(unittest.TestCase):
             handle.write("\n## Another zero prompt\n\nA newly available prompt.\n")
         result = self.run_installer(self.target)
         self.assert_success(result)
-        self.assertIn("## Another zero prompt\n\nA newly available prompt.", result.stdout)
+        printed = result.stdout.split("## Another zero prompt\n", 1)[1]
+        self.assertIn("A newly available prompt.", printed)
+        self.assertIn("Source revision: unavailable", printed)
+        self.assertIn("Installed-file SHA-256:", printed)
 
     def test_help_and_required_target(self):
         result = self.run_installer("--help")

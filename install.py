@@ -2,7 +2,9 @@
 """Install Socrates Loop's files in a project and display its zero prompts."""
 
 import argparse
+import hashlib
 from pathlib import Path
+import subprocess
 import sys
 
 
@@ -12,6 +14,28 @@ TEMPLATES = (
     ("MEMORY_TEMPLATE.md", "docs/agent/MEMORY_TEMPLATE.md"),
 )
 DIRECTORIES = ("docs", "docs/agent", ".agent", ".agent/logs")
+
+
+def source_identity(source):
+    """Identify this checkout, not a target or an enclosing repository."""
+    def git(*args):
+        return subprocess.check_output(
+            ["git", "--no-optional-locks", "-C", str(source), *args],
+            stderr=subprocess.DEVNULL, text=True,
+        ).strip()
+
+    try:
+        if Path(git("rev-parse", "--show-toplevel")).resolve() != source:
+            return "unavailable", "unavailable"
+        revision = git("rev-parse", "HEAD")
+        changes = git(
+            "status", "--porcelain", "--untracked-files=all", "--",
+            "install.py", "Agent-Zero-prompt.md",
+            *("templates/" + name for name, _ in TEMPLATES),
+        )
+        return revision, "modified or untracked" if changes else "clean"
+    except (OSError, subprocess.CalledProcessError):
+        return "unavailable", "unavailable"
 
 
 def check_destination(path, directory=False):
@@ -50,10 +74,11 @@ def install(target, dry_run=False):
 
     # Read all inputs and check all destinations before changing the project.
     templates = [
-        (target / destination, (source / name).read_bytes())
+        (target / destination, (source / "templates" / name).read_bytes())
         for name, destination in TEMPLATES
     ]
-    prompts = (source / "Agent-Zero-prompt.md").read_text(encoding="utf-8")
+    prompt_bytes = (source / "Agent-Zero-prompt.md").read_bytes()
+    prompts = prompt_bytes.decode("utf-8")
     directories = []
     for name in DIRECTORIES:
         path = target / name
@@ -76,6 +101,25 @@ def install(target, dry_run=False):
     gitignore = target / ".gitignore"
     existing_ignore = gitignore.read_bytes() if check_destination(gitignore) else b""
     addition = ignore_addition(existing_ignore)
+
+    # Capture source state before self-installation can change this checkout.
+    if not dry_run:
+        revision, state = source_identity(source)
+        provenance = [
+            "Socrates Loop source provenance (retain in the task brief and closeout):",
+            "", "```text",
+            "Source revision: " + revision,
+            "Source input state (installer, prompt, canonical templates): " + state,
+            "Installed-file SHA-256:",
+        ]
+        provenance.extend(
+            "{}  {}".format(hashlib.sha256(contents).hexdigest(), path.relative_to(target).as_posix())
+            for path, contents in templates
+        )
+        provenance.extend([
+            "Source Agent-Zero-prompt.md SHA-256: " + hashlib.sha256(prompt_bytes).hexdigest(),
+            "```",
+        ])
 
     print("{}: {}".format("Installation preview" if dry_run else "Installing Socrates Loop", target))
     for path in directories:
@@ -112,9 +156,12 @@ def install(target, dry_run=False):
             "Existing task records were preserved. Resume or close out that task "
             "before starting a bootstrap task."
         )
-    print("\nOpen this project in your coding agent and copy the appropriate zero prompt below.")
+    print("\nOpen this project in your coding agent and copy the appropriate zero prompt below, including its provenance.")
     print("For a new project, replace MY_DESIGN.md with the path to your design specification.\n")
-    print(prompts.strip())
+    for line in prompts.strip().splitlines():
+        print(line)
+        if line.startswith("## "):
+            print("\n" + "\n".join(provenance))
 
 
 def main():

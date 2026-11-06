@@ -1,151 +1,75 @@
-# AGENTS.md — <REPO_NAME>
+# AGENTS.md — socrates-loop
 
-You are an AI coding agent operating inside the `<REPO_NAME>` repository.
+You are an AI coding agent operating inside the `socrates-loop` repository.
 
-This file is **always-on guidance**. Keep it short, stable, and high-signal. If something is task-specific, it belongs in `.agent/TASK_BRIEF.md`, `.agent/MEMORY.md`, or other `.agent/` artifacts, not here.
-
----
-
-## How to instantiate this template in a new repo
-This template is meant to be converted into a repo-specific `AGENTS.md` as the first task in a repository.
-
-When bootstrapping a new repo, the agent should:
-1. Read the user’s project brief and the repo tree.
-2. Replace the placeholders in the sections **before** `## Working agreement`.
-3. Preserve all policy sections from `## Working agreement` onward unless the user explicitly changes them.
-4. Generalize or prune inapplicable repo-specific sections.
-5. Complete `## Documentation ownership` using existing files or sections. Remove unused optional roles; propose new documents only for distinct needs that existing owners cannot serve.
-
----
+This file is always-on guidance. Keep task scope and progress in `.agent/TASK_BRIEF.md`, and investigation evidence in `.agent/MEMORY.md`.
 
 ## Mission
-<Describe the repo’s purpose in 2–5 lines. Focus on what the codebase does, for whom, and the dominant workflow or system boundary.>
-
-Examples:
-- Train and evaluate <MODEL_TYPE> for <TASK>, using a <DATA_WORKFLOW> workflow.
-- Build and operate <SYSTEM_NAME>, including <CORE_SUBSYSTEMS>.
-- Provide tools and services for <PRIMARY_USE_CASE>.
+Socrates Loop supplies Markdown templates and a Python installer for a four-phase, human-guided agent workflow. It installs repository guidance and task-record templates into target projects, including this repository itself.
 
 ## Source of truth
-When docs and code disagree, trust these files:
-- `<path/to/primary/entrypoint_or_cli>`
-- `<path/to/core/runtime_or_train_logic>`
-- `<path/to/secondary_runtime_or_eval_logic>`
-- `<path/to/common/shared_logic>`
-- `<path/to/config_or_schema_definition>`
-
-Additional repo-specific rules:
-- <example: Keep optional subsystem infrastructure available; do not remove it unless explicitly requested.>
-- <example: Prefer metadata-first inference over hard-coded defaults.>
-- <example: Preserve backward compatibility for configs, artifacts, APIs, or on-disk layouts.>
-
----
+- `install.py` owns installation behavior, destination checks and CLI options.
+- `templates/AGENTS_TEMPLATE.md` owns the distributed working agreement and guidance template.
+- `templates/TASK_BRIEF_TEMPLATE.md` and `templates/MEMORY_TEMPLATE.md` own distributed task-record structures.
+- `Agent-Zero-prompt.md` and `Update-prompt.md` own bootstrap and integration-update instructions.
+- `tests/test_install.py` exercises installer behavior in isolated temporary checkouts and targets.
 
 ## Repo map
+- `templates/` — generic source assets shipped to every target repository.
+- `install.py` — standard-library Python CLI; no package dependencies.
+- `tests/` — installer regression tests.
+- `docs/agent/` — this repository's installed task templates and, after closeout, task archives.
+- `docs/example-walkthrough.md` — illustrative complete workflow.
+- `.agent/` — ignored active task records and diagnostic artifacts.
 
-### High-signal code
-- `<src_or_pkg_dir>/` — <core library / application code>
-  - `<important_file_or_subdir>` — <why it matters>
-  - `<important_file_or_subdir>` — <why it matters>
-  - `<important_file_or_subdir>` — <why it matters>
-- `<secondary_code_dir>/` — <evaluation / reporting / tooling / services>
-- `<tests_dir>/` — <test suite>
-- `<configs_or_schema_dir>/` — <configuration / schemas / manifests>
-
-### Large/noisy dirs (do not scan by default)
-Avoid expensive traversal unless explicitly needed:
-- `<artifacts_or_models_dir>/`
-- `<data_dir_pattern>/`
-- `<logs_or_runtime_dir>/`
-- `<generated_or_cache_dir>/`
-
-Use targeted commands instead (e.g., `ls <dir>`, `find <dir> -maxdepth 2 ...`, `rg ...`) and keep outputs small.
-
----
+Do not scan `.agent/logs/`, `docs/assets/` or task archives by default. Select relevant historical closeouts under the docs policy below.
 
 ## Core workflow (essential agent commands)
+`README.md` owns setup, self-installation, usage, updates and development checks. `Agent-Zero-prompt.md` owns bootstrap phases; `Update-prompt.md` owns integration-update checks. Use those procedures for installation work.
 
-`README.md` or a focused runbook owns setup and workflow procedures. Keep only commands essential to routine agent work here and under `Tests (default)`; link to the owner for full instructions. Any repeated command is a quick reference and must stay consistent with its owner.
-
-- Workflow instructions: `<owning path#section>`
-
-```bash
-<essential agent command, if needed; otherwise remove this block>
-```
-
----
-
-## Metadata contracts (important)
-Document the contracts the agent must preserve. Examples:
-- Inputs / outputs written to disk:
-  - `<path_or_pattern>` writes `<artifact>`
-  - `<path_or_pattern>` reads `<artifact>`
-- Metadata or schema behavior:
-  - <example: omitted CLI args are inferred from metadata>
-  - <example: explicit CLI args override inferred defaults>
-- Runtime invariants:
-  - <example: preserve backward compatibility of config keys>
-  - <example: never change reward semantics without explicit approval>
-
-If this repo does not use metadata-driven behavior, replace this section with the relevant invariants/contracts.
-
----
+## Installation contracts
+- Canonical files under `templates/` remain generic. Installation reads them and never customizes or removes them.
+- Root `AGENTS_TEMPLATE.md` is temporary bootstrap staging, removed only at approved bootstrap closeout. Root `AGENTS.md` is this repository's installed guidance.
+- Installed task templates live under `docs/agent/`; active task records live under ignored `.agent/`.
+- Preserve existing guidance, task records, logs and archives. Conflicting templates and invalid destination types or symlinks must fail preflight before installation writes.
+- `--dry-run` makes no filesystem changes. Relative targets resolve from the caller's working directory.
+- Keep external target paths and CLI compatibility. Self-installation uses the same mapping as external installation.
+- Source-template development and later integration updates are separate tasks. Use fixed source inputs throughout an integration update, as described in `Update-prompt.md`.
 
 ## Tests (default)
-Run the fastest meaningful checks first:
+From the checkout root, as documented in `README.md#development-checks`:
+
 ```bash
-<insert canonical fast test command>
+python3 -B -m unittest discover -s tests -v
 ```
 
-If the repo has special runtime issues, document the workaround here:
-```bash
-<insert env workaround if needed>
-```
-
-Optional additional checks:
-```bash
-<insert lint / typecheck / integration command if appropriate>
-```
-
----
+Tests use temporary directories. The Git ignore-behavior test skips if Git is unavailable.
 
 ## Coding/style conventions
-- <language/runtime version(s), if important>
-- <naming/style conventions that should be preserved>
-- Prefer minimal, localized diffs; avoid broad formatting-only changes unless requested.
-- <linter / formatter / style-config rule if one exists>
-- If no single formatter/linter is enforced, follow existing local style in touched files.
-
----
+- Use Python 3 and the standard library; follow the existing local style.
+- Keep changes localized and avoid broad formatting-only edits.
+- Keep shared policy and installed templates consistent with their canonical sources; document any approved deviation.
 
 ## Documentation ownership
 
-Give each maintained topic one authoritative owner. Map the roles below to existing files or sections and remove unused optional rows; a small repository may use README sections for several roles.
-
 | Document or section | Owns | Does not own |
 |---|---|---|
-| `AGENTS.md` | Agent working agreement, essential invariants and documentation routing | Task status, detailed manuals and historical results |
-| `README.md` | Setup, common usage and navigation | Investigation chronology |
-| `.agent/TASK_BRIEF.md` | Active task scope, acceptance criteria and execution state | Project-wide reference documentation |
-| `.agent/MEMORY.md` | Task investigation and verification evidence | A duplicate task plan |
-| `docs/agent/tasks/<task_slug>/CLOSEOUT.md` | Historical task outcomes, decisions, verification and follow-ups | Current operating instructions |
-| Other archived task records | Supporting plans, investigation and evidence for deeper dives | Current guidance or active task state |
-| `<current-state path#section, if needed>` | Project-wide active work, accepted deliverables, unresolved issues and next boundary | Detailed task plans and completed-work chronology |
-| `<architecture path#section, if needed>` | Implementation responsibilities and entrypoints | Operating procedures and task history |
-| `<runbook path#section, if needed>` | Current procedures and operating contracts | Experiment chronology |
-| `<metrics path#section, if needed>` | Definitions, comparability and interpretation | Individual run results |
-| `<design path#section, if needed>` | Approved design, constraints and acceptance gates | Live task progress |
-| `<results path#section, if needed>` | Historical findings and supporting evidence | Current operating instructions |
+| `AGENTS.md` | This repository's working agreement, essential invariants and routing | Task status, detailed procedures and historical results |
+| `README.md` | Setup, usage, repository navigation and development checks | Investigation chronology |
+| `templates/AGENTS_TEMPLATE.md` | Distributed guidance template and shared workflow policy | This repository's specific guidance |
+| `templates/TASK_BRIEF_TEMPLATE.md`, `templates/MEMORY_TEMPLATE.md` | Distributed task-record structures | Active task content |
+| `Agent-Zero-prompt.md` | Bootstrap instructions | Ongoing integration updates |
+| `Update-prompt.md` | Integration-update scope and acceptance checks | General setup or task history |
+| `docs/example-walkthrough.md` | Illustrative task lifecycle | Normative installation or policy rules |
+| `.agent/TASK_BRIEF.md` | Active scope, acceptance criteria and execution state | Project-wide reference documentation |
+| `.agent/MEMORY.md` | Investigation and verification evidence | Duplicate task plans |
+| `docs/agent/tasks/<task_slug>/CLOSEOUT.md` | Historical outcomes, decisions, verification and follow-ups | Current operating instructions |
+| Other archived task records | Supporting plans and evidence | Active task state |
 
-Project state summarizes and links to active tasks rather than copying their plans.
-
----
+The files under `docs/agent/` are installed copies of the canonical task templates, not independent documentation owners.
 
 ## Significant behavior
-
-For traceability, treat a bug as significant when it can affect:
-
-- <user-visible behavior, persisted data, public APIs, safety or security, model outputs, evaluation results, or other repository-specific outcomes>
+Treat bugs affecting installed file contents, preservation of user files or task history, installation safety, CLI behavior, or bootstrap/update policy as significant.
 
 ---
 
