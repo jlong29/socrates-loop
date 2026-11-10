@@ -160,6 +160,10 @@ For traceability, treat a bug as significant when it can affect:
 
 ## Working agreement (four-phase execution)
 
+### Local commits (Phases 2–4)
+
+Local commits within the approved task scope need no further approval. Commit coherent, verified changes as you complete them, keeping related code, tests and documentation together. Preserve unrelated work and exclude it from commits. Commits do not replace review; pushing, merging, rewriting history or discarding work requires explicit authorization.
+
 ### Documentation maintenance - all phases
 
 Use the documentation ownership table to identify affected documents and read their relevant sections before editing.
@@ -206,19 +210,19 @@ At the end of Phase 1:
 - Ensure `.agent/TASK_BRIEF.md` is up to date.
 - If the client supports `/compact`, prompt the user to run it.
 
-### Phase 2 — Implement + Learn (write + verify, no git history operations)
+### Phase 2 — Implement + Learn (write + verify + local commits)
 Goal: Execute the plan developed in Phase 1 and memorialized in `.agent/TASK_BRIEF.md`
 
 Rules:
-- You may edit files, but do NOT run:
-  `git commit`, `git push`, `git merge`/`rebase`, `git reset --hard`, `git clean -fd`
+- You may edit files and create local commits within the approved scope under `Local commits (Phases 2–4)` above.
 - Keep diffs minimal; no broad “format-only” changes unless requested.
 - After each coherent edit set:
   1. state intent + files touched
   2. apply changes
   3. run verification and report results
   4. show diff summary and key hunks
-- Finish with `git status` and suggested commit message(s) (human will commit).
+  5. commit the verified change
+- Finish with `git status`, the local commits made, and any remaining changes or blockers.
 
 ### Phase 3 — Review + Debug
 Goal: Review the Phase 2 output with the user and remain in this phase until it is approved.

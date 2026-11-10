@@ -11,7 +11,7 @@ Socrates Loop turns a long-running agent task into a sequence of inspectable, ve
 **Specification → Plan → Implement → Review → Learn → Next task**
 
 1. **Plan:** The agent studies the repository, relevant maintained docs and any completed task closeouts without editing tracked files, then writes a task brief with constraints, milestones, success criteria, risks, and verification commands. Work pauses for approval.
-2. **Implement:** The agent executes the approved plan in small change sets, verifies each set, and records investigation evidence outside the permanent repository guidance.
+2. **Implement:** The agent executes the approved plan in coherent change sets, verifies and commits each set locally, and records investigation evidence outside the permanent repository guidance. Local commits need no separate approval; publishing and history changes remain separately authorized.
 3. **Review and debug:** The user reviews the result. The agent handles failures with a reproduce, hypothesize, test, and surgical-fix loop.
 4. **Close out:** The agent reconciles affected documentation, replacing superseded guidance and preserving unique historical evidence. It archives sanitized task records and a closeout that supports future Phase 1 planning, then marks the task complete.
 

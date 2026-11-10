@@ -118,6 +118,8 @@ The investigation belongs in `.agent/MEMORY.md`. An excerpt after successful ver
 
 Before handing back, the agent replaces the obsolete sentence in `README.md#usage` with: “Search ignores capitalization and preserves the original quote text and order. With no query it prints both quotes; with no match it prints nothing.” It keeps failure evidence in memory rather than appending a second, conflicting usage rule. It updates the task brief: the first milestone is complete, **Phase** is `Phase 3`, **State** is `awaiting review`, and **Next steps** identifies review and closeout. It updates **Last updated** to match.
 
+The agent commits the verified fix, regression check and README update together, for example as `fix: make quote search case-insensitive`. Unrelated changes stay out of the commit. The handoff reports the local commit and remaining work; the commit does not replace the review below or authorize a push.
+
 ## 3. Review in a new session
 
 Open a fresh agent session in the same repository. You can use a different model with access to the same files. Give it this prompt:
