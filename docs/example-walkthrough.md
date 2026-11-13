@@ -58,7 +58,9 @@ The agent compares `python3 socrates.py know` with `python3 socrates.py KNOW` an
 ## Files and documentation owners
 - README.md#usage — replace the case-sensitive matching instruction.
 
-## Verification
+## Plan and verification
+- For M1, use fixed input/output assertions covering the success criteria.
+- For M2, casefold the query and quote text for comparison; return original quotes.
 - python3 check_socrates.py — expect failure before the fix,
   then 5 checks passed.
 - python3 socrates.py KNOW — expect the first quote with its original text.

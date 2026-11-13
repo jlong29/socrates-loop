@@ -24,7 +24,7 @@ Milestones track what needs to be built; success criteria define how to know it 
 - <project invariants and material risks>
 
 ## Milestones
-- [ ] M1 — <deliverable or intermediate outcome; include necessary implementation steps here>
+- [ ] M1 — <deliverable or intermediate outcome>
 - [ ] M2 — <next outcome in execution order>
 
 ## Success criteria
@@ -34,7 +34,8 @@ Milestones track what needs to be built; success criteria define how to know it 
 ## Files and documentation owners
 - `path/to/file` — <role and intended change; identify affected documentation owners>
 
-## Verification
+## Plan and verification
+- <implementation approach and dependencies; refer to milestone IDs without duplicating progress checklists>
 - <verification command, expected outcome and limitations; check outcomes against requirements independently of the implementation>
 
 ## Decisions and open questions

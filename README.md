@@ -51,7 +51,7 @@ Keep both active task records, but omit unused sections. The brief owns scope an
 | [`templates/AGENTS_TEMPLATE.md`](templates/AGENTS_TEMPLATE.md) | Customizable repository guidance and the four-phase working agreement. |
 | [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md) | Bootstrap prompts for existing repositories and new repositories that begin with a design specification. |
 | [`Update-prompt.md`](Update-prompt.md) | Instructions and acceptance checks for updating an installed integration as a normal task. |
-| [`templates/TASK_BRIEF_TEMPLATE.md`](templates/TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestone and success-criteria checklists, verification and decisions. |
+| [`templates/TASK_BRIEF_TEMPLATE.md`](templates/TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestone and success-criteria checklists, plan, verification and decisions. |
 | [`templates/MEMORY_TEMPLATE.md`](templates/MEMORY_TEMPLATE.md) | Compact investigation evidence, gotchas, bug-impact records, and verification results. |
 | [`docs/assets/social-preview.png`](docs/assets/social-preview.png) | Source image for the repository’s GitHub social preview. |
 | [`LICENSE`](LICENSE) | MIT license terms. |
