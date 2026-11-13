@@ -2,6 +2,8 @@
 
 Keep this brief proportionate to the task. Omit unused sections; record intent, decisions and next steps rather than restating Git diffs. Add experiment details only when needed.
 
+Milestones track what needs to be built; success criteria define how to know it works. Keep both checklists current so a new session can identify unfinished work.
+
 ## Task
 - <goal and why it matters>
 
@@ -15,25 +17,28 @@ Keep this brief proportionate to the task. Omit unused sections; record intent, 
 - **History scope:** <explicit paths, last N relevant closeouts, all closeouts from the named epoch, or none>
 - **Closeouts reviewed:** <resolved paths or none>
 
-## Scope and acceptance criteria
+## Scope
 - <included scope and explicit exclusions>
-- [ ] <observable result required for acceptance>
 
 ## Constraints
 - <project invariants and material risks>
 
+## Milestones
+- [ ] M1 — <deliverable or intermediate outcome; include necessary implementation steps here>
+- [ ] M2 — <next outcome in execution order>
+
+## Success criteria
+- [ ] <observable behavior or measurable result required for acceptance>
+- [ ] <another acceptance criterion>
+
 ## Files and documentation owners
 - `path/to/file` — <role and intended change; identify affected documentation owners>
 
-## Plan and verification
-1. <coherent change: intent, files and meaningful checks>
-2. <next change or review milestone, if needed>
-
+## Verification
 - <verification command, expected outcome and limitations; check outcomes against requirements independently of the implementation>
 
 ## Decisions and open questions
 - <material decision and rationale, or unresolved question; link to evidence>
 
 ## Next steps
-1. <next concrete action>
-2. <following action, if known>
+1. <immediate action or blocker; refer to a milestone where applicable>

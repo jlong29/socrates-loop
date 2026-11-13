@@ -47,21 +47,21 @@ The agent compares `python3 socrates.py know` with `python3 socrates.py KNOW` an
 - **State:** planned
 - **Last updated:** <current date and time>
 
-## Scope and acceptance criteria
+## Milestones
+- [ ] M1 — Regression check in check_socrates.py reproduces the failure.
+- [ ] M2 — Case-insensitive search implemented and README usage updated.
+
+## Success criteria
 - [ ] Match queries regardless of capitalization; preserve quote text and order.
 - [ ] An empty query returns both quotes; an unmatched query returns nothing.
-
-## Constraints
-- Preserve the original quote text and order.
 
 ## Files and documentation owners
 - README.md#usage — replace the case-sensitive matching instruction.
 
-## Plan and verification
-1. Add checks for lowercase, uppercase, and mixed-case matching,
-   an empty query, and an unmatched query.
-2. Normalize query and quote text for comparison.
-3. Run the checks and inspect the command-line output.
+## Verification
+- python3 check_socrates.py — expect failure before the fix,
+  then 5 checks passed.
+- python3 socrates.py KNOW — expect the first quote with its original text.
 
 ## Next steps
 1. Await approval to implement.
@@ -116,7 +116,7 @@ The investigation belongs in `.agent/MEMORY.md`. An excerpt after successful ver
 - Normalize text for comparison; return the original quote for display.
 ```
 
-Before handing back, the agent replaces the obsolete sentence in `README.md#usage` with: “Search ignores capitalization and preserves the original quote text and order. With no query it prints both quotes; with no match it prints nothing.” It retains failure evidence and verification results in memory without copying the code diff into task records. It updates the task brief: the acceptance checks are verified, **Phase** is `Phase 3`, **State** is `awaiting review`, and **Next steps** identifies review and closeout. It updates **Last updated** to match.
+Before handing back, the agent replaces the obsolete sentence in `README.md#usage` with: “Search ignores capitalization and preserves the original quote text and order. With no query it prints both quotes; with no match it prints nothing.” It retains failure evidence and verification results in memory without copying the code diff into task records. It updates the task brief: M1 and M2 are complete, the success criteria are verified, **Phase** is `Phase 3`, **State** is `awaiting review`, and **Next steps** identifies review and closeout. It updates **Last updated** to match.
 
 The agent commits the verified fix, regression check and README update together, for example as `fix: make quote search case-insensitive`. Unrelated changes stay out of the commit. The handoff reports the local commit and remaining work; the commit does not replace the review below or authorize a push.
 
