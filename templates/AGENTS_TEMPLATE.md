@@ -2,7 +2,7 @@
 
 You are an AI coding agent operating inside the `<REPO_NAME>` repository.
 
-This file is **always-on guidance**. Keep it short, stable, and high-signal. If something is task-specific, it belongs in `.agent/TASK_BRIEF.md`, `.agent/MEMORY.md`, or other `.agent/` artifacts, not here.
+This file is **always-on guidance**. Focus on project-specific constraints, decisions and non-obvious commands. Link to maintained documentation and omit generic engineering advice or facts readily discoverable from the code. Task-specific scope and evidence belong in `.agent/`.
 
 ---
 
@@ -30,11 +30,6 @@ Keep these checks in the bootstrap task records; omit these instantiation instru
 ## Mission
 <Describe the repo’s purpose in 2–5 lines. Focus on what the codebase does, for whom, and the dominant workflow or system boundary.>
 
-Examples:
-- Train and evaluate <MODEL_TYPE> for <TASK>, using a <DATA_WORKFLOW> workflow.
-- Build and operate <SYSTEM_NAME>, including <CORE_SUBSYSTEMS>.
-- Provide tools and services for <PRIMARY_USE_CASE>.
-
 ## Source of truth
 When docs and code disagree, trust these files:
 - `<path/to/primary/entrypoint_or_cli>`
@@ -52,6 +47,8 @@ Additional repo-specific rules:
 
 ## Repo map
 
+Include navigation that saves meaningful rediscovery; omit obvious layout details.
+
 ### High-signal code
 - `<src_or_pkg_dir>/` — <core library / application code>
   - `<important_file_or_subdir>` — <why it matters>
@@ -67,8 +64,6 @@ Avoid expensive traversal unless explicitly needed:
 - `<data_dir_pattern>/`
 - `<logs_or_runtime_dir>/`
 - `<generated_or_cache_dir>/`
-
-Use targeted commands instead (e.g., `ls <dir>`, `find <dir> -maxdepth 2 ...`, `rg ...`) and keep outputs small.
 
 ---
 
@@ -101,7 +96,7 @@ If this repo does not use metadata-driven behavior, replace this section with th
 ---
 
 ## Tests (default)
-Run the fastest meaningful checks first:
+List reliable project checks and any non-obvious prerequisites:
 ```bash
 <insert canonical fast test command>
 ```
@@ -121,9 +116,7 @@ Optional additional checks:
 ## Coding/style conventions
 - <language/runtime version(s), if important>
 - <naming/style conventions that should be preserved>
-- Prefer minimal, localized diffs; avoid broad formatting-only changes unless requested.
 - <linter / formatter / style-config rule if one exists>
-- If no single formatter/linter is enforced, follow existing local style in touched files.
 
 ---
 
@@ -160,6 +153,10 @@ For traceability, treat a bug as significant when it can affect:
 
 ## Working agreement (four-phase execution)
 
+### Local commits (Phases 2–4)
+
+Local commits within the approved task scope need no further approval. Commit coherent, verified changes as you complete them, keeping related code, tests and documentation together. Preserve unrelated work and exclude it from commits. Commits do not replace review; pushing, merging, rewriting history or discarding work requires explicit authorization.
+
 ### Documentation maintenance - all phases
 
 Use the documentation ownership table to identify affected documents and read their relevant sections before editing.
@@ -191,45 +188,29 @@ Rules:
      - `docs/agent/MEMORY_TEMPLATE.md` to `.agent/MEMORY.md`
 - Construct the task brief from relevant maintained guidance and, when available, prior closeouts according to `Prior task context (selective)` under `## Docs policy`.
 - Do not edit code or tracked files in this phase.
-- Use ≤10 shell commands and keep output concise (avoid long listings).
 - Restate goal + success criteria.
 - Identify the minimal relevant files and affected documentation owners, and why.
 - Propose a plan + verification commands.
 - Stop and ask before proceeding.
 
 **Phase 1 deliverable:**
-- Write the plan to `.agent/TASK_BRIEF.md` following the template and augmenting it where warranted.
+- Write the plan to `.agent/TASK_BRIEF.md`, using the template sections that serve the task. Define observable acceptance criteria and checks that can expose incorrect or incomplete results.
 
 `.agent/` is **untracked**. The brief may be updated in Phase 2.
 
-At the end of Phase 1:
-- Ensure `.agent/TASK_BRIEF.md` is up to date.
-- If the client supports `/compact`, prompt the user to run it.
-
-### Phase 2 — Implement + Learn (write + verify, no git history operations)
+### Phase 2 — Implement + Learn (write + verify + local commits)
 Goal: Execute the plan developed in Phase 1 and memorialized in `.agent/TASK_BRIEF.md`
 
-Rules:
-- You may edit files, but do NOT run:
-  `git commit`, `git push`, `git merge`/`rebase`, `git reset --hard`, `git clean -fd`
-- Keep diffs minimal; no broad “format-only” changes unless requested.
-- After each coherent edit set:
-  1. state intent + files touched
-  2. apply changes
-  3. run verification and report results
-  4. show diff summary and key hunks
-- Finish with `git status` and suggested commit message(s) (human will commit).
+Implement the approved plan in coherent changes, verifying and committing each under `Local commits (Phases 2–4)` above. Keep changes within scope; avoid unrelated refactoring or formatting.
+
+At handoff, report the outcome, verification results and gaps, local commits, and remaining changes or blockers. Include `git status`.
 
 ### Phase 3 — Review + Debug
 Goal: Review the Phase 2 output with the user and remain in this phase until it is approved.
 
-When debugging a failure or unexpected behavior found during review, follow this strict loop:
-1. Reproduce the failure with the exact command provided.
-2. Minimize the repro (smallest failing command/test).
-3. Propose 1–2 hypotheses and what evidence would confirm each.
-4. Add a targeted regression test when feasible.
-5. Make a **surgical** fix (minimal files), re-run the failing test(s), then broaden coverage.
-6. Update `.agent/TASK_BRIEF.md` with what changed and why; add a timestamp to all edits to preserve the chronology of decisions.
+- Verify outcomes against the agreed acceptance criteria. Derive expected results from the requirements, independently of the implementation; confirm that checks exercise the intended behavior and expose failures.
+- Distinguish executed checks from source inspection and assumptions. Report unverified behavior and limitations; a success message alone is insufficient evidence.
+- Reproduce reported failures, correct them within scope, and add targeted regression coverage when feasible. Re-run affected checks and update the records for material changes to decisions, evidence or status.
 
 ### Phase 4 — Task completion / closeout procedure
 Goal: Summarize completed work and clean up.
@@ -269,12 +250,7 @@ At completion:
 
 Updating this repository's Socrates Loop integration is a normal task under this working agreement. Start only when no other task is active, and use the selected Socrates Loop checkout's `Update-prompt.md` for update-specific scope and verification. The update task's own records remain active through implementation and review.
 
-### Purpose
-1. **Task-related documents** most notably TASK_BRIEF.md
-2. **User-provided artifacts for debugging** (logs, traces, perf output) that the agent should inspect.
-3. **Agent working memory externalization** when the chat context window is under pressure.
-
-> Record new gotchas in `.agent/MEMORY.md` and apply `Documentation maintenance - all phases` as guidance changes.
+Keep task records proportionate to the work. Git history owns code changes; records preserve scope, rationale, evidence and unresolved questions. Do not restate commit diffs or maintain a duplicate commit ledger. Omit unused sections and link to existing evidence instead of repeating it. Keep both active record files and the required closeout archive even for small tasks.
 
 ### Flat structure (preferred)
 - `.agent/TASK_BRIEF.md` — compact task description, success criteria, and progress notes
@@ -291,7 +267,7 @@ The task brief is the authoritative record of the task’s scope and execution s
 
 `docs/agent/MEMORY_TEMPLATE.md` defines the document structure.
 
-Memory is a compact investigation notebook for evidence that supports the task brief: reproduction commands, hypotheses, failed experiments, debugging evidence, gotchas, bug-impact records, and verification results. Keep it to **≤200 lines** when possible and use concise bullets.
+Memory holds verification evidence and, when needed, reproduction commands, hypotheses, failed experiments, gotchas and bug-impact records. Investigation sections are optional when there is nothing useful to retain.
 
 Do not duplicate the task plan or current task status in memory. Findings are candidates for documentation reconciliation, not automatic additions to permanent guidance.
 
@@ -307,20 +283,13 @@ The agent may create filtered snippets alongside logs, e.g.:
 
 Keep snippets **small** (e.g., ≤ 500 lines). Do not copy huge logs.
 
-### When to externalize to `.agent/`
-Externalize (write/update `.agent/MEMORY.md`) when any of these is true:
-- The plan has evolved materially beyond Phase 1.
-- Debugging involves multiple hypotheses or long traces.
-- The session is getting long (check `/status` or a token status line).
-- The agent is about to run `/compact`.
-
-After externalizing:
-- Update `.agent/MEMORY.md`
+### Handoffs
+Keep material decisions, unresolved questions and verification evidence current so another session can continue the task. Conversation compaction is managed by the agent client; no manual compaction step is required by this workflow.
 
 ---
 
-## Docs policy (protect the context window)
-Do NOT read the entire docs tree by default.
+## Docs policy
+Read documentation relevant to the task rather than scanning the entire docs tree.
 
 Use `Documentation ownership` to select relevant maintained guidance. Treat superseded specs and plans as historical evidence, not current instructions.
 

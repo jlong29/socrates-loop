@@ -47,21 +47,23 @@ The agent compares `python3 socrates.py know` with `python3 socrates.py KNOW` an
 - **State:** planned
 - **Last updated:** <current date and time>
 
-## Fixed invariants (do not change)
-- Preserve the original quote text and order.
+## Milestones
+- [ ] M1 — Regression check in check_socrates.py reproduces the failure.
+- [ ] M2 — Case-insensitive search implemented and README usage updated.
 
-## Documentation impact
+## Success criteria
+- [ ] Match queries regardless of capitalization; preserve quote text and order.
+- [ ] An empty query returns both quotes; an unmatched query returns nothing.
+
+## Files and documentation owners
 - README.md#usage — replace the case-sensitive matching instruction.
 
-## Milestones
-- [ ] Fix matching and verify all five checks.
-- [ ] Review the output and complete closeout.
-
-## Implementation plan
-1. Add checks for lowercase, uppercase, and mixed-case matching,
-   an empty query, and an unmatched query.
-2. Normalize query and quote text for comparison.
-3. Run the checks and inspect the command-line output.
+## Plan and verification
+- For M1, use fixed input/output assertions covering the success criteria.
+- For M2, casefold the query and quote text for comparison; return original quotes.
+- python3 check_socrates.py — expect failure before the fix,
+  then 5 checks passed.
+- python3 socrates.py KNOW — expect the first quote with its original text.
 
 ## Next steps
 1. Await approval to implement.
@@ -116,15 +118,17 @@ The investigation belongs in `.agent/MEMORY.md`. An excerpt after successful ver
 - Normalize text for comparison; return the original quote for display.
 ```
 
-Before handing back, the agent replaces the obsolete sentence in `README.md#usage` with: “Search ignores capitalization and preserves the original quote text and order. With no query it prints both quotes; with no match it prints nothing.” It keeps failure evidence in memory rather than appending a second, conflicting usage rule. It updates the task brief: the first milestone is complete, **Phase** is `Phase 3`, **State** is `awaiting review`, and **Next steps** identifies review and closeout. It updates **Last updated** to match.
+Before handing back, the agent replaces the obsolete sentence in `README.md#usage` with: “Search ignores capitalization and preserves the original quote text and order. With no query it prints both quotes; with no match it prints nothing.” It retains failure evidence and verification results in memory without copying the code diff into task records. It updates the task brief: M1 and M2 are complete, the success criteria are verified, **Phase** is `Phase 3`, **State** is `awaiting review`, and **Next steps** identifies review and closeout. It updates **Last updated** to match.
+
+The agent commits the verified fix, regression check and README update together, for example as `fix: make quote search case-insensitive`. Unrelated changes stay out of the commit. The handoff reports the local commit and remaining work; the commit does not replace the review below or authorize a push.
 
 ## 3. Review in a new session
 
 Open a fresh agent session in the same repository. You can use a different model with access to the same files. Give it this prompt:
 
-> Read `AGENTS.md`, `.agent/TASK_BRIEF.md`, and `.agent/MEMORY.md`. Resume the existing task at its recorded phase. Summarize what has been verified and what remains. Re-run `python3 check_socrates.py` and show the output of `python3 socrates.py KNOW` for review.
+> Read `AGENTS.md`, `.agent/TASK_BRIEF.md`, and `.agent/MEMORY.md`. Resume the existing task at its recorded phase. Check the result against the acceptance criteria. Re-run `python3 check_socrates.py` and inspect the command-line outputs for `KNOW`, an empty query and `hemlock`. Report any gaps between the required behavior and the observed results.
 
-The agent has enough information to locate the fix, understand the display constraint, and repeat the verification. You can review its result without reconstructing the previous conversation.
+The required outcomes are one unchanged quote for `KNOW`, both quotes for an empty query, and no output for `hemlock`. These expectations come from the task request; a passing check script alone does not establish that the command-line behavior is correct. The records retain enough context to review the result without reconstructing the previous conversation.
 
 If a check fails, remain in review: reproduce the failure, test a hypothesis, make a targeted correction, and update the evidence before requesting approval again.
 
