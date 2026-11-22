@@ -6,7 +6,10 @@
 Keep evidence needed to understand decisions and verify outcomes. Omit unused investigation sections; link to durable evidence and do not duplicate the task brief or Git diffs.
 
 ## Investigation (when needed)
-- <reproduction, relevant observations, hypotheses or failed approaches worth retaining>
+- Hypothesis / question: <testable explanation or uncertainty>
+- Check: <experiment or comparison and predicted observations that could distinguish explanations>
+- Evidence: <commands/conditions and observed results, or links to reproducible evidence>
+- Conclusion: <what the evidence supports or contradicts; rejected explanations and remaining uncertainty>
 
 ## Gotchas discovered (reconcile with maintained owners)
 

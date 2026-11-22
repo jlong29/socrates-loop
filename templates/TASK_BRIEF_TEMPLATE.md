@@ -35,7 +35,7 @@ Milestones track what needs to be built; success criteria define how to know it 
 - `path/to/file` — <role and intended change; identify affected documentation owners>
 
 ## Plan and verification
-- <implementation approach and dependencies; refer to milestone IDs without duplicating progress checklists>
+- <implementation and investigation approach, material uncertainties and dependencies; refer to milestone IDs without duplicating progress checklists>
 - <verification command, expected outcome and limitations; check outcomes against requirements independently of the implementation>
 
 ## Decisions and open questions

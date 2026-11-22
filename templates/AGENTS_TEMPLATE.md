@@ -31,12 +31,14 @@ Keep these checks in the bootstrap task records; omit these instantiation instru
 <Describe the repo’s purpose in 2–5 lines. Focus on what the codebase does, for whom, and the dominant workflow or system boundary.>
 
 ## Source of truth
-When docs and code disagree, trust these files:
+Inspect these files to understand implemented behavior:
 - `<path/to/primary/entrypoint_or_cli>`
 - `<path/to/core/runtime_or_train_logic>`
 - `<path/to/secondary_runtime_or_eval_logic>`
 - `<path/to/common/shared_logic>`
 - `<path/to/config_or_schema_definition>`
+
+Use approved requirements and contracts to establish intended behavior. When documentation, code or observed results disagree, investigate the discrepancy rather than assuming either the document or implementation is correct; ask the user if intended behavior remains ambiguous.
 
 Additional repo-specific rules:
 - <example: Keep optional subsystem infrastructure available; do not remove it unless explicitly requested.>
@@ -157,6 +159,12 @@ For traceability, treat a bug as significant when it can affect:
 
 Local commits within the approved task scope need no further approval. Commit coherent, verified changes as you complete them, keeping related code, tests and documentation together. Preserve unrelated work and exclude it from commits. Commits do not replace review; pushing, merging, rewriting history or discarding work requires explicit authorization.
 
+### Investigation and plan changes (all phases)
+
+When material uncertainty about behavior, cause or approach affects the work, state a testable hypothesis. Identify observations that could support, distinguish or contradict the explanation, and choose checks or experiments accordingly. Compare results with predictions and revise the hypothesis, conclusion or plan. Preserve meaningful evidence under the `.agent/` policy below. Routine changes with clear acceptance checks need no invented hypothesis or fixed experiment sequence.
+
+If findings require a material change to approved scope, constraints or success criteria, record the proposed change in the brief and obtain user approval before proceeding with work that depends on it. Updating the brief alone does not authorize the change. Routine implementation choices within approved bounds need no additional approval.
+
 ### Documentation maintenance - all phases
 
 Use the documentation ownership table to identify affected documents and read their relevant sections before editing.
@@ -180,37 +188,32 @@ For every bug affecting behavior defined as significant above:
 Goal: build repo-aware understanding and produce one planning deliverable.
 
 Rules:
-- At the start of a new task, initialize the workspace:
-  1. Run `mkdir -p .agent/logs`.
-  2. If `.agent/TASK_BRIEF.md` or `.agent/MEMORY.md` already exists, treat it as possible unfinished work and do not overwrite it without user confirmation.
-  3. Otherwise, copy:
-     - `docs/agent/TASK_BRIEF_TEMPLATE.md` to `.agent/TASK_BRIEF.md`
-     - `docs/agent/MEMORY_TEMPLATE.md` to `.agent/MEMORY.md`
+- Follow `Starting or resuming work` below before planning.
 - Construct the task brief from relevant maintained guidance and, when available, prior closeouts according to `Prior task context (selective)` under `## Docs policy`.
 - Do not edit code or tracked files in this phase.
 - Restate goal + success criteria.
 - Identify the minimal relevant files and affected documentation owners, and why.
-- Propose a plan + verification commands.
-- Stop and ask before proceeding.
+- Propose a plan and verification commands, including how to investigate material uncertainties.
+- Stop for user approval of the brief before Phase 2.
 
 **Phase 1 deliverable:**
 - Write the plan to `.agent/TASK_BRIEF.md`, using the template sections that serve the task. Define observable acceptance criteria and checks that can expose incorrect or incomplete results.
 
-`.agent/` is **untracked**. The brief may be updated in Phase 2.
+Task records under `.agent/` may be written during planning.
 
 ### Phase 2 — Implement + Learn (write + verify + local commits)
 Goal: Execute the plan developed in Phase 1 and memorialized in `.agent/TASK_BRIEF.md`
 
-Implement the approved plan in coherent changes, verifying and committing each under `Local commits (Phases 2–4)` above. Keep changes within scope; avoid unrelated refactoring or formatting.
+After approval, set the brief to **Phase 2 / in progress**. Implement the approved plan in coherent changes, verifying and committing each under `Local commits (Phases 2–4)` above. Use investigation findings to refine the approach within approved bounds; avoid unrelated refactoring or formatting.
 
-At handoff, report the outcome, verification results and gaps, local commits, and remaining changes or blockers. Include `git status`.
+When ready for user review, set the brief to **Phase 3 / awaiting review**. At handoff, report the outcome, verification results and gaps, local commits, and remaining changes or blockers. Include `git status`.
 
 ### Phase 3 — Review + Debug
 Goal: Review the Phase 2 output with the user and remain in this phase until it is approved.
 
 - Verify outcomes against the agreed acceptance criteria. Derive expected results from the requirements, independently of the implementation; confirm that checks exercise the intended behavior and expose failures.
 - Distinguish executed checks from source inspection and assumptions. Report unverified behavior and limitations; a success message alone is insufficient evidence.
-- Reproduce reported failures, correct them within scope, and add targeted regression coverage when feasible. Re-run affected checks and update the records for material changes to decisions, evidence or status.
+- Reproduce and investigate reported failures under `Investigation and plan changes`, correct them within scope, and add targeted regression coverage when feasible. Re-run affected checks.
 
 ### Phase 4 — Task completion / closeout procedure
 Goal: Summarize completed work and clean up.
@@ -252,6 +255,15 @@ Updating this repository's Socrates Loop integration is a normal task under this
 
 Keep task records proportionate to the work. Git history owns code changes; records preserve scope, rationale, evidence and unresolved questions. Do not restate commit diffs or maintain a duplicate commit ledger. Omit unused sections and link to existing evidence instead of repeating it. Keep both active record files and the required closeout archive even for small tasks.
 
+### Starting or resuming work
+
+- Before starting or resuming work, read `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md` if they exist. Reconcile their scope, phase, decisions and evidence with the latest user request and current repository state.
+- For the same task, resume its recorded phase and next action, incorporating later user decisions. Reconstruct missing records from their templates and available evidence once the task and phase are clear; preserve any existing record.
+- If records belong to another task or the task/phase remains unclear after checking available context, preserve them and resolve this with the user before starting new work. Do not overwrite existing records to initialize a new task.
+- For a new task with neither record present, run `mkdir -p .agent/logs`, copy `docs/agent/TASK_BRIEF_TEMPLATE.md` to `.agent/TASK_BRIEF.md` and `docs/agent/MEMORY_TEMPLATE.md` to `.agent/MEMORY.md`, and begin Phase 1.
+
+During work, consult relevant memory entries before repeating investigations or revising conclusions. Follow evidence references as needed; inspect relevant or user-identified logs/artifacts selectively rather than scanning the entire `.agent/` folder.
+
 ### Flat structure (preferred)
 - `.agent/TASK_BRIEF.md` — compact task description, success criteria, and progress notes
 - `.agent/MEMORY.md` — compact running notes related to the work process rather than the task definition itself
@@ -261,13 +273,13 @@ Keep task records proportionate to the work. Git history owns code changes; reco
 
 `docs/agent/TASK_BRIEF_TEMPLATE.md` defines the document structure.
 
-The task brief is the authoritative record of the task’s scope and execution state. Keep its goal, success criteria, status, decisions, and next steps current. Update it whenever the plan, scope, acceptance criteria, or execution state changes materially.
+The task brief is the authoritative record of the task’s scope and execution state. Update it when goals, scope, constraints, plans, success criteria, decisions, milestone progress or next actions change materially, and at each phase/state transition. Update **Last updated** with those changes.
 
 ### `.agent/MEMORY.md`
 
 `docs/agent/MEMORY_TEMPLATE.md` defines the document structure.
 
-Memory holds verification evidence and, when needed, reproduction commands, hypotheses, failed experiments, gotchas and bug-impact records. Investigation sections are optional when there is nothing useful to retain.
+Record meaningful investigation and verification results when obtained: the hypothesis or question where relevant, reproducible checks and conditions, expected and observed results, conclusions and limitations. Preserve material negative results, rejected hypotheses and unresolved uncertainty; revise conclusions when evidence changes. Keep observations distinct from inference. Omit unused investigation sections.
 
 Do not duplicate the task plan or current task status in memory. Findings are candidates for documentation reconciliation, not automatic additions to permanent guidance.
 
@@ -284,7 +296,7 @@ The agent may create filtered snippets alongside logs, e.g.:
 Keep snippets **small** (e.g., ≤ 500 lines). Do not copy huge logs.
 
 ### Handoffs
-Keep material decisions, unresolved questions and verification evidence current so another session can continue the task. Conversation compaction is managed by the agent client; no manual compaction step is required by this workflow.
+Before requesting approval or handing off work, bring both records up to date using their roles above. Make the next action and unresolved questions clear enough for another session to resume. Conversation compaction is managed by the agent client; no manual compaction step is required by this workflow.
 
 ---
 
@@ -293,7 +305,7 @@ Read documentation relevant to the task rather than scanning the entire docs tre
 
 Use `Documentation ownership` to select relevant maintained guidance. Treat superseded specs and plans as historical evidence, not current instructions.
 
-In Phases 2–3, use the active task brief alongside maintained guidance; revisit history when a new question requires it. If a topic has no owner, propose an existing section or a focused new document in the task plan.
+Use the active task records alongside maintained guidance during execution; revisit history when a new question requires it. If a topic has no owner, propose an existing section or a focused new document in the task plan.
 
 ### Prior task context (selective)
 

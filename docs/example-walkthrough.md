@@ -36,7 +36,7 @@ Give your agent this task:
 
 > Fix the quote search so it ignores capitalization. Keep the original quote text and order. With no query, print both quotes; with no match, print nothing. Follow `AGENTS.md`: reproduce the problem, write the plan in `.agent/TASK_BRIEF.md`, and stop for approval.
 
-The agent compares `python3 socrates.py know` with `python3 socrates.py KNOW` and records the difference. Its task brief should make the intended behavior inspectable:
+The agent compares `python3 socrates.py know` with `python3 socrates.py KNOW` and records the difference. The README describes existing behavior; the user's request establishes the intended behavior for this task. Its task brief should make that behavior inspectable:
 
 ```markdown
 ## Task
@@ -59,7 +59,8 @@ The agent compares `python3 socrates.py know` with `python3 socrates.py KNOW` an
 - README.md#usage — replace the case-sensitive matching instruction.
 
 ## Plan and verification
-- For M1, use fixed input/output assertions covering the success criteria.
+- For M1, test whether the mismatch also occurs in direct calls to find_quotes;
+  then add fixed input/output assertions covering the success criteria.
 - For M2, casefold the query and quote text for comparison; return original quotes.
 - python3 check_socrates.py — expect failure before the fix,
   then 5 checks passed.
@@ -76,6 +77,8 @@ In the *Apology*, Socrates describes testing the oracle's claim about his wisdom
 After inspecting the plan, reply:
 
 > Approved. Implement the plan, run the checks, and update the task records. Stop for review.
+
+The agent sets the brief to **Phase 2 / in progress**. To distinguish a problem confined to CLI argument handling from one in matching, it calls `find_quotes` directly with `know` and `KNOW`. The first call returns the first quote; the second returns nothing. This contradicts the CLI-only explanation. Inspecting the function identifies its case-sensitive comparison. The agent records these observations in memory before applying the fix.
 
 A minimal regression check, saved as `check_socrates.py`, captures the five expected results:
 
@@ -99,9 +102,19 @@ def find_quotes(query):
 
 Run the checks again. The expected result is `5 checks passed`. Also run `python3 socrates.py KNOW` and confirm that the first quote retains its original capitalization.
 
-The investigation belongs in `.agent/MEMORY.md`. An excerpt after successful verification would be:
+The agent adds verification evidence to `.agent/MEMORY.md` as it obtains the results. The resulting investigation excerpt would be:
 
 ```markdown
+## Investigation
+- Hypothesis: the case-sensitive comparison causes the mismatch;
+  an alternative is a problem confined to CLI argument handling.
+- Check: call the function directly, bypassing CLI argument handling.
+  A mismatch here would contradict the CLI-only explanation.
+- Evidence: python3 -c 'from socrates import find_quotes; print(find_quotes("know"), find_quotes("KNOW"))'
+  before the fix prints the first quote in a list, then an empty list.
+- Conclusion: the failure is in matching; the CLI-only explanation is rejected.
+  Source inspection identifies comparison of the original strings as the cause.
+
 ## Bug impact traceability
 
 ### BUG-001 — Search misses matches with different capitalization
@@ -126,11 +139,11 @@ The agent commits the verified fix, regression check and README update together,
 
 Open a fresh agent session in the same repository. You can use a different model with access to the same files. Give it this prompt:
 
-> Read `AGENTS.md`, `.agent/TASK_BRIEF.md`, and `.agent/MEMORY.md`. Resume the existing task at its recorded phase. Check the result against the acceptance criteria. Re-run `python3 check_socrates.py` and inspect the command-line outputs for `KNOW`, an empty query and `hemlock`. Report any gaps between the required behavior and the observed results.
+> Read `AGENTS.md`, `.agent/TASK_BRIEF.md`, and `.agent/MEMORY.md`. Reconcile the recorded state with the current repository and latest user instructions, then resume the existing task at its recorded phase. Check the result against the acceptance criteria. Re-run `python3 check_socrates.py` and inspect the command-line outputs for `KNOW`, an empty query and `hemlock`. Report any gaps between the required behavior and the observed results.
 
 The required outcomes are one unchanged quote for `KNOW`, both quotes for an empty query, and no output for `hemlock`. These expectations come from the task request; a passing check script alone does not establish that the command-line behavior is correct. The records retain enough context to review the result without reconstructing the previous conversation.
 
-If a check fails, remain in review: reproduce the failure, test a hypothesis, make a targeted correction, and update the evidence before requesting approval again.
+If a check fails, remain in review: reproduce the failure, investigate uncertain causes, make a targeted correction within scope, and update the evidence before requesting approval again.
 
 ## 4. Close out
 

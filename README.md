@@ -10,8 +10,8 @@ Socrates Loop turns a long-running agent task into a sequence of inspectable, ve
 
 **Specification → Plan → Implement → Review → Learn → Next task**
 
-1. **Plan:** The agent studies the relevant repository context without editing tracked files, then writes a compact task brief with scope, constraints, acceptance criteria and verification. Work pauses for approval.
-2. **Implement:** The agent executes the approved plan in coherent change sets, verifies and commits each set locally, and records investigation evidence outside the permanent repository guidance. Local commits need no separate approval; publishing and history changes remain separately authorized.
+1. **Plan:** The agent studies the relevant repository context without editing tracked files, then writes a compact task brief with scope, constraints, milestones, success criteria and a plan for implementation, investigation and verification. Work pauses for approval.
+2. **Implement:** The agent executes the approved plan in coherent change sets, uses evidence to test hypotheses and refine its approach where needed, verifies and commits each set locally, and records meaningful findings as they arise. Local commits need no separate approval; publishing and history changes remain separately authorized.
 3. **Review and debug:** The user reviews the result against the acceptance criteria. Verification checks observable outcomes independently of the implementation and records gaps; the agent corrects failures and remains in review until approved.
 4. **Close out:** The agent reconciles affected documentation, replacing superseded guidance and preserving unique historical evidence. It archives sanitized task records and a closeout that supports future Phase 1 planning, then marks the task complete.
 
@@ -21,7 +21,7 @@ All four phases and their approval gates are mandatory. The amount of documentat
 
 - **Documentation has bounded owners.** Each topic has an owner; superseded guidance is replaced rather than accumulated.
 - **Intent is inspectable before implementation.** Scope, acceptance criteria, constraints and verification make the intended outcome reviewable.
-- **Working evidence has a defined home.** Reproduction commands, hypotheses, failed experiments, and bug-impact records live in memory rather than being lost in chat history.
+- **Working evidence has a defined home.** Hypotheses, reproducible experiments, observations, conclusions and bug-impact records live in memory, including material negative results and unresolved uncertainty.
 - **Human approval remains part of the loop.** The workflow creates explicit checkpoints before implementation and before closeout.
 - **Useful history informs the next plan.** Relevant closeouts supply decisions, outcomes and follow-ups; deeper archives resolve questions left unanswered.
 
