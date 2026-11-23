@@ -39,7 +39,7 @@ Milestones track what needs to be built; success criteria define how to know it 
 - <verification command, expected outcome and limitations; check outcomes against requirements independently of the implementation>
 
 ## Decisions and open questions
-- <material decision and rationale, or unresolved question; link to evidence>
+- <material decision and rationale, or remaining uncertainty with investigation status; link to evidence and identify any decision needed from the user>
 
 ## Next steps
 1. <immediate action or blocker; refer to a milestone where applicable>

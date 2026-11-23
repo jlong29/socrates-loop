@@ -163,6 +163,8 @@ Local commits within the approved task scope need no further approval. Commit co
 
 When material uncertainty about behavior, cause or approach affects the work, state a testable hypothesis. Identify observations that could support, distinguish or contradict the explanation, and choose checks or experiments accordingly. Compare results with predictions and revise the hypothesis, conclusion or plan. Preserve meaningful evidence under the `.agent/` policy below. Routine changes with clear acceptance checks need no invented hypothesis or fixed experiment sequence.
 
+Use available project context and proportionate checks within the current phase's permissions and approved scope to resolve uncertainty before asking the user or reviewer. Act on supported conclusions and report them as findings with evidence. Raise remaining questions when evidence is insufficient or unavailable, or the answer requires the author's judgment; explain what was checked, what remains unresolved and the decision needed. Bring blocking decisions to the user when encountered rather than waiting for the review handoff.
+
 If findings require a material change to approved scope, constraints or success criteria, record the proposed change in the brief and obtain user approval before proceeding with work that depends on it. Updating the brief alone does not authorize the change. Routine implementation choices within approved bounds need no additional approval.
 
 ### Documentation maintenance - all phases
