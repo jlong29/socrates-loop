@@ -134,6 +134,7 @@ Give each maintained topic one authoritative owner. Map the roles below to exist
 | `.agent/MEMORY.md` | Task investigation and verification evidence | A duplicate task plan |
 | `docs/agent/tasks/<task_slug>/CLOSEOUT.md` | Historical task outcomes, decisions, verification and follow-ups | Current operating instructions |
 | Other archived task records | Supporting plans, investigation and evidence for deeper dives | Current guidance or active task state |
+| `<orchestration manifest and runbook, if used>` | Approved task assignments, dependency and review relationships, execution transitions and integration procedure | Replacement project requirements or independent working policy |
 | `<current-state path#section, if needed>` | Project-wide active work, accepted deliverables, unresolved issues and next boundary | Detailed task plans and completed-work chronology |
 | `<architecture path#section, if needed>` | Implementation responsibilities and entrypoints | Operating procedures and task history |
 | `<runbook path#section, if needed>` | Current procedures and operating contracts | Experiment chronology |
@@ -158,6 +159,26 @@ For traceability, treat a bug as significant when it can affect:
 ### Local commits (Phases 2–4)
 
 Local commits within the approved task scope need no further approval. Commit coherent, verified changes as you complete them, keeping related code, tests and documentation together. Preserve unrelated work and exclude it from commits. Commits do not replace review; pushing, merging, rewriting history or discarding work requires explicit authorization.
+
+### Review authority and optional delegation
+
+The user is the reviewer unless the user explicitly delegates review authority for a named scope. Record the assigned reviewer, approved scope and boundaries in the task brief and, when used, the orchestration manifest. Delegation preserves all four phases and their gates; it does not authorize changing parent requirements, accepting one's own work, or publishing changes. The same working agreement applies to parent agents, child agents and reviewer turns. Their assignments and permitted actions differ; their policy does not.
+
+Before proposing delegation, assess whether work has separable outcomes, clear success-criterion ownership, sufficiently stable interfaces, useful parallelism, and an identified integration owner. Account for shared files, review effort and integration cost. Keep the task with one agent when these conditions do not justify delegation.
+
+For approved delegation:
+
+- Preserve the parent's original goal, milestones, constraints and success criteria. Add coordination milestones as needed; do not replace product outcomes with checkboxes that only say to launch or review agents. Map each child to stable parent milestone and criterion IDs, and retain cross-cutting acceptance and integration checks with the parent.
+- Give each active task its own workspace and task records. A parent reviewing a child remains in its own Phase 2 while the child is in Phase 1 or Phase 3. Preserve the parent's `.agent/TASK_BRIEF.md` and `.agent/MEMORY.md`; do not load a child's records as if they replaced the parent task.
+- Distinguish dependency edges from reviewer assignments. A reviewer relationship does not mean the parent task must finish before the child can run. A dependent task may use only the accepted input version named in its brief; changed inputs require revalidation.
+- Use one approved policy version throughout a run. Record its identity and relevant input versions. If policy, scope, criteria or contracts change, stop affected work and resolve the change explicitly instead of allowing agents to proceed under different assumptions.
+- At a gate, submit a review candidate identifying the task, approved brief and criteria, baseline, exact code/documentation version, verification evidence and unresolved findings. Stop making changes to that candidate. The assigned reviewer evaluates it against both delegated criteria and applicable parent constraints; the author cannot approve its own candidate.
+- An approval applies to the reviewed version. Requested repairs remain in Phase 3, produce a new candidate, and require a new review. A resumed or replacement agent reconstructs the same task from durable records and the review findings; a new session does not create new authority.
+- After Phase 4, verify archival and reconcile any changes made after review. Substantive code, contract or maintained-document changes need revalidation before integration. Child completion does not establish that the combined parent result works.
+- An explicitly authorized integration controller may combine accepted changes into the named parent branch and remove clean, archived, integrated child worktrees according to the approved runbook. Local-commit permission alone does not authorize merges, cleanup that discards work, pushes, or changes to other branches.
+- An approved runbook may reserve local Git operations to the supervisor for every agent role. In that mode agents yield coherent, verified changes and the supervisor creates their local commits. This assigns an existing capability; it does not remove the default workflow's local-commit permission or create a separate policy for the parent.
+
+The parent remains responsible for checking the assembled result against its original success criteria. Its own Phase 3 requires the user or another explicitly assigned reviewer; approving child candidates does not approve the parent result.
 
 ### Investigation and plan changes (all phases)
 
@@ -196,7 +217,7 @@ Rules:
 - Restate goal + success criteria.
 - Identify the minimal relevant files and affected documentation owners, and why.
 - Propose a plan and verification commands, including how to investigate material uncertainties.
-- Stop for user approval of the brief before Phase 2.
+- Stop for approval of the brief by the user or explicitly assigned reviewer before Phase 2.
 
 **Phase 1 deliverable:**
 - Write the plan to `.agent/TASK_BRIEF.md`, using the template sections that serve the task. Define observable acceptance criteria and checks that can expose incorrect or incomplete results.
@@ -208,10 +229,10 @@ Goal: Execute the plan developed in Phase 1 and memorialized in `.agent/TASK_BRI
 
 After approval, set the brief to **Phase 2 / in progress**. Implement the approved plan in coherent changes, verifying and committing each under `Local commits (Phases 2–4)` above. Use investigation findings to refine the approach within approved bounds; avoid unrelated refactoring or formatting.
 
-When ready for user review, set the brief to **Phase 3 / awaiting review**. At handoff, report the outcome, verification results and gaps, local commits, and remaining changes or blockers. Include `git status`.
+When ready for review by the user or explicitly assigned reviewer, set the brief to **Phase 3 / awaiting review**. At handoff, report the outcome, verification results and gaps, local commits, and remaining changes or blockers. Include `git status`. In an orchestrated task, identify the exact review candidate and yield control to the supervisor; do not begin closeout until that candidate is approved.
 
 ### Phase 3 — Review + Debug
-Goal: Review the Phase 2 output with the user and remain in this phase until it is approved.
+Goal: Review the Phase 2 output with the user or explicitly assigned reviewer and remain in this phase until it is approved.
 
 - Verify outcomes against the agreed acceptance criteria. Derive expected results from the requirements, independently of the implementation; confirm that checks exercise the intended behavior and expose failures.
 - Distinguish executed checks from source inspection and assumptions. Report unverified behavior and limitations; a success message alone is insufficient evidence.
@@ -220,7 +241,7 @@ Goal: Review the Phase 2 output with the user and remain in this phase until it 
 ### Phase 4 — Task completion / closeout procedure
 Goal: Summarize completed work and clean up.
 
-After the user approves the Phase 3 result, the agent should:
+After the user or explicitly assigned reviewer approves the Phase 3 result, the agent should:
 1. Update `.agent/TASK_BRIEF.md`: set **Phase** to `Phase 4`, **State** to `in progress`, and **Last updated** to the current date and time.
 2. Review this `AGENTS.md` and the task's acceptance criteria and verification evidence.
 3. Apply `Documentation maintenance - all phases` to affected owners; no new permanent guidance is required when none is warranted.
@@ -276,6 +297,8 @@ During work, consult relevant memory entries before repeating investigations or 
 `docs/agent/TASK_BRIEF_TEMPLATE.md` defines the document structure.
 
 The task brief is the authoritative record of the task’s scope and execution state. Update it when goals, scope, constraints, plans, success criteria, decisions, milestone progress or next actions change materially, and at each phase/state transition. Update **Last updated** with those changes.
+
+For an explicitly orchestrated run, the approved brief remains authoritative for scope and intended outcomes; the supervisor ledger owns observed execution phase/state and accepted review transitions. Use its status projection for current progress when the approved parent brief is frozen, and reconcile task records with it at handoff. An agent's edit to a status field cannot approve its candidate, release a dependency or authorize integration.
 
 ### `.agent/MEMORY.md`
 

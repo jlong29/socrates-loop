@@ -2,7 +2,7 @@
 
 # Socrates Loop
 
-Socrates Loop is a small set of Markdown templates for bootstrapping repository-specific instructions and a four-phase AI-assisted development workflow. It separates durable repository guidance from task plans, working memory, and diagnostic artifacts.
+Socrates Loop supplies Markdown templates for bootstrapping repository-specific instructions and a four-phase AI-assisted development workflow. It separates durable repository guidance from task plans, working memory, and diagnostic artifacts. An optional Linux orchestrator applies the same workflow to a parent task and multiple child agents.
 
 ## How it works
 
@@ -22,7 +22,7 @@ All four phases and their approval gates are mandatory. The amount of documentat
 - **Documentation has bounded owners.** Each topic has an owner; superseded guidance is replaced rather than accumulated.
 - **Intent is inspectable before implementation.** Scope, acceptance criteria, constraints and verification make the intended outcome reviewable.
 - **Working evidence has a defined home.** Hypotheses, reproducible experiments, observations, conclusions and bug-impact records live in memory, including material negative results and unresolved uncertainty.
-- **Human approval remains part of the loop.** The workflow creates explicit checkpoints before implementation and before closeout.
+- **Approval remains explicit.** The user reviews plans and results by default. Optional orchestration requires named, scoped delegation of child-review authority and retains a separate final review of the parent result.
 - **Useful history informs the next plan.** Relevant closeouts supply decisions, outcomes and follow-ups; deeper archives resolve questions left unanswered.
 
 The workflow centers on project-specific intent, constraints, decisions and verifiable outcomes. The agent client manages conversation context; Socrates Loop imposes no shell-command quota or manual compaction step.
@@ -53,6 +53,9 @@ Keep both active task records, but omit unused sections. The brief owns scope an
 | [`Update-prompt.md`](Update-prompt.md) | Instructions and acceptance checks for updating an installed integration as a normal task. |
 | [`templates/TASK_BRIEF_TEMPLATE.md`](templates/TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestone and success-criteria checklists, plan, verification and decisions. |
 | [`templates/MEMORY_TEMPLATE.md`](templates/MEMORY_TEMPLATE.md) | Compact investigation evidence, gotchas, bug-impact records, and verification results. |
+| [`templates/REVIEW_CANDIDATE_TEMPLATE.md`](templates/REVIEW_CANDIDATE_TEMPLATE.md) | Optional review handoff with exact candidate identity, criterion mapping and evidence; not copied by the installer. |
+| [`socrates_orchestrator/`](socrates_orchestrator/) | Optional standard-library Python runtime for local task scheduling, agent review and integration. |
+| [`docs/orchestrator-design.md`](docs/orchestrator-design.md) | Orchestrator design, manifest, operating commands, approval boundaries and implementation limits. |
 | [`docs/assets/social-preview.png`](docs/assets/social-preview.png) | Source image for the repository’s GitHub social preview. |
 | [`LICENSE`](LICENSE) | MIT license terms. |
 
@@ -94,6 +97,30 @@ Bootstrap includes a bounded review of recommended build/test commands, includin
 
 See the [Ask Socrates walkthrough](docs/example-walkthrough.md) for a complete task, including resuming work in a new session.
 
+## Optional orchestration
+
+The local orchestrator runs a parent task and a static dependency graph of child tasks on Linux with Python 3.11+, Git and a configured Codex CLI. Each child uses its own branch, worktree and task records. Independent implementations can run in parallel; parent review turns are serialized and retain the original parent goals and acceptance criteria.
+
+Children stop for plan review and implementation review. The parent reviews exact candidates under the same approved policy, returns actionable repairs or approves closeout, and reviews the closed result before integration. The controller records transitions in SQLite and combines accepted changes into the named parent branch. Clean, archived and integrated child worktrees are eligible for automatic cleanup. Final parent acceptance remains with the user or another explicitly assigned reviewer.
+
+Start with the [design and operating guide](docs/orchestrator-design.md). It includes the versioned manifest, commands and recovery procedure. From this source checkout, an explicitly approved run uses:
+
+```bash
+python3 -m socrates_orchestrator init \
+  --repo /path/to/project \
+  --manifest /path/to/approved-manifest.json \
+  --run-dir /path/to/runs/feature-a \
+  --approve
+python3 -m socrates_orchestrator run --run-dir /path/to/runs/feature-a
+python3 -m socrates_orchestrator status --run-dir /path/to/runs/feature-a
+```
+
+The target must already have an approved parent brief, appropriate shared policy and a clean committed baseline on a dedicated feature branch. The run directory is separate from the project. The shared runtime protocol assigns all local Git operations to the supervisor; agents yield verified changes for candidate commits and review. The runtime does not grant its own review or merge authority, push changes, open a PR, or merge into `main`.
+
+This is an initial implementation with offline tests using fake agents and temporary Git repositories. A live CLI smoke attempt failed during initialization in this workspace before a model turn; see the guide's [validation record](docs/orchestrator-design.md#13-validation-and-follow-on-development). Live execution, model review quality and long-project drift reduction require separate evaluation. The runtime supports a bounded local workflow; it is not a distributed or dynamically replanning agent service.
+
+The existing installer mapping is unchanged. Source-template changes do not update root `AGENTS.md` or installed templates under `docs/agent/`. Use a separate [integration-update task](#updating-an-installation) to adopt delegated review and orchestration guidance in a target repository; the optional review-candidate source template is not installed automatically.
+
 ## Updating an installation
 
 Updating Socrates Loop is a Socrates Loop task in the target repository. Its existing four-phase working agreement supplies planning, approval, implementation, review, and closeout. Start when no other task is active; the update itself has normal task records.
@@ -120,13 +147,13 @@ For self-updates, finish and close out the source-template development task firs
 
 ## Development checks
 
-Run the installer regression suite from this checkout:
+Run the regression suite from this checkout. The complete suite, including orchestration checks, requires Python 3.11+ on Linux; the installer itself still uses Python 3 and the standard library:
 
 ```bash
 python3 -B -m unittest discover -s tests -v
 ```
 
-Tests use isolated temporary projects and do not update another repository. Git-dependent checks skip when Git is unavailable; evaluation-fixture checks require Bash and Python 3. These tests verify installer and fixture behavior, not the quality of an agent's generated guidance.
+Tests use isolated temporary projects and do not update another repository. Git-dependent checks skip when Git is unavailable; evaluation-fixture checks require Bash and Python 3. Orchestrator tests use deterministic fake executables rather than a live model, with real Git operations in temporary repositories. They check process handoffs, review identity, state transitions and integration behavior, not the quality of an agent's generated guidance or judgments.
 
 ### Bootstrap evaluation
 
