@@ -10,20 +10,22 @@ Socrates Loop turns a long-running agent task into a sequence of inspectable, ve
 
 **Specification → Plan → Implement → Review → Learn → Next task**
 
-1. **Plan:** The agent studies the repository, relevant maintained docs and any completed task closeouts without editing tracked files, then writes a task brief with constraints, milestones, success criteria, risks, and verification commands. Work pauses for approval.
-2. **Implement:** The agent executes the approved plan in small change sets, verifies each set, and records investigation evidence outside the permanent repository guidance.
-3. **Review and debug:** The user reviews the result. The agent handles failures with a reproduce, hypothesize, test, and surgical-fix loop.
+1. **Plan:** The agent studies the relevant repository context without editing tracked files, then writes a compact task brief with scope, constraints, milestones, success criteria and a plan for implementation, investigation and verification. Work pauses for approval.
+2. **Implement:** The agent executes the approved plan in coherent change sets, uses evidence to test hypotheses and refine its approach where needed, verifies and commits each set locally, and records meaningful findings as they arise. Local commits need no separate approval; publishing and history changes remain separately authorized.
+3. **Review and debug:** The user reviews the result against the acceptance criteria. Verification checks observable outcomes independently of the implementation and records gaps; the agent corrects failures and remains in review until approved.
 4. **Close out:** The agent reconciles affected documentation, replacing superseded guidance and preserving unique historical evidence. It archives sanitized task records and a closeout that supports future Phase 1 planning, then marks the task complete.
 
-## Why it works
+All four phases and their approval gates are mandatory. The amount of documentation should match the work; routine tasks need concise records, not a transcript or a copy of the commit diff.
+
+## What the workflow preserves
 
 - **Documentation has bounded owners.** Each topic has an owner; superseded guidance is replaced rather than accumulated.
-- **Intent is inspectable before implementation.** Milestones, success criteria, invariants, and verification commands make drift visible while it is still inexpensive to correct.
-- **Working evidence has a defined home.** Reproduction commands, hypotheses, failed experiments, and bug-impact records live in memory rather than being lost in chat history.
+- **Intent is inspectable before implementation.** Scope, acceptance criteria, constraints and verification make the intended outcome reviewable.
+- **Working evidence has a defined home.** Hypotheses, reproducible experiments, observations, conclusions and bug-impact records live in memory, including material negative results and unresolved uncertainty.
 - **Human approval remains part of the loop.** The workflow creates explicit checkpoints before implementation and before closeout.
 - **Useful history informs the next plan.** Relevant closeouts supply decisions, outcomes and follow-ups; deeper archives resolve questions left unanswered.
 
-This is a human-guided engineering workflow, not an autonomous orchestration system. Its purpose is to help an agent work for longer without losing the goal, repeating mistakes, or silently changing important assumptions.
+The workflow centers on project-specific intent, constraints, decisions and verifiable outcomes. The agent client manages conversation context; Socrates Loop imposes no shell-command quota or manual compaction step.
 
 ## Documentation roles
 
@@ -39,6 +41,8 @@ The ownership table in `AGENTS.md` maps roles to repository-specific files or se
 
 Small repositories can use README sections for several maintained roles. Separate project-state, architecture, operations, metrics or design documents are optional. Closeout reviews affected owners; it does not require every task to add permanent guidance.
 
+Keep both active task records, but omit unused sections. The brief owns scope and state; memory holds verification and useful investigation; the closeout preserves outcomes, decisions and follow-ups. Git owns the detailed change history. Link to evidence when useful rather than duplicating it across these records.
+
 ## Repository contents
 
 | File | Purpose |
@@ -47,7 +51,7 @@ Small repositories can use README sections for several maintained roles. Separat
 | [`templates/AGENTS_TEMPLATE.md`](templates/AGENTS_TEMPLATE.md) | Customizable repository guidance and the four-phase working agreement. |
 | [`Agent-Zero-prompt.md`](Agent-Zero-prompt.md) | Bootstrap prompts for existing repositories and new repositories that begin with a design specification. |
 | [`Update-prompt.md`](Update-prompt.md) | Instructions and acceptance checks for updating an installed integration as a normal task. |
-| [`templates/TASK_BRIEF_TEMPLATE.md`](templates/TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestones, success criteria, implementation plan, and decisions. |
+| [`templates/TASK_BRIEF_TEMPLATE.md`](templates/TASK_BRIEF_TEMPLATE.md) | Task scope, status, milestone and success-criteria checklists, plan, verification and decisions. |
 | [`templates/MEMORY_TEMPLATE.md`](templates/MEMORY_TEMPLATE.md) | Compact investigation evidence, gotchas, bug-impact records, and verification results. |
 | [`docs/assets/social-preview.png`](docs/assets/social-preview.png) | Source image for the repository’s GitHub social preview. |
 | [`LICENSE`](LICENSE) | MIT license terms. |

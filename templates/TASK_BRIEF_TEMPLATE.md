@@ -1,7 +1,11 @@
 # TASK BRIEF
 
+Keep this brief proportionate to the task. Omit unused sections; record intent, decisions and next steps rather than restating Git diffs. Add experiment details only when needed.
+
+Milestones track what needs to be built; success criteria define how to know it works. Keep both checklists current so a new session can identify unfinished work.
+
 ## Task
-- <one sentence summary of the task>
+- <goal and why it matters>
 
 ## Status
 - **Phase:** <Phase 1 | Phase 2 | Phase 3 | Phase 4>
@@ -13,57 +17,29 @@
 - **History scope:** <explicit paths, last N relevant closeouts, all closeouts from the named epoch, or none>
 - **Closeouts reviewed:** <resolved paths or none>
 
-## Why this update
-- <why we are doing this now; what changed / what prompted it>
+## Scope
+- <included scope and explicit exclusions>
 
-## Fixed invariants (do not change)
-- <constraints that must remain true while executing this task>
-
-## Experiment dimensions (optional)
-- <if applicable: knobs/axes to explore; otherwise delete this section>
-
-## Goal
-- <what success looks like at a high level>
+## Constraints
+- <project invariants and material risks>
 
 ## Milestones
-- [ ] M1 — <observable intermediate outcome>
-- [ ] M2 — <observable intermediate outcome>
+- [ ] M1 — <deliverable or intermediate outcome>
+- [ ] M2 — <next outcome in execution order>
 
 ## Success criteria
-- [ ] <measurable acceptance criterion #1>
-- [ ] <measurable acceptance criterion #2>
+- [ ] <observable behavior or measurable result required for acceptance>
+- [ ] <another acceptance criterion>
 
-## Relevant files (why)
-- `path/to/file.py` — <why it matters>
+## Files and documentation owners
+- `path/to/file` — <role and intended change; identify affected documentation owners>
 
-## Documentation impact
-- <affected owner path#section and expected change, or none with reason; record final dispositions in CLOSEOUT.md>
+## Plan and verification
+- <implementation and investigation approach, material uncertainties and dependencies; refer to milestone IDs without duplicating progress checklists>
+- <verification command, expected outcome and limitations; check outcomes against requirements independently of the implementation>
 
-## Implementation plan
-1. <step 1>
-2. <step 2>
-
-## Small change sets (execution order)
-1. <change set 1: intent + files>
-2. <change set 2: intent + files>
-
-## Verification
-- Fast: `<command>`
-- Targeted: `<command>`
-- Full: `<command>`
-
-## Risks / gotchas
-- <risk #1>
-
-## Decision rule (optional)
-- <how to choose defaults based on results>
-
-## Decisions
-- <decision> — <reason and supporting evidence>
+## Decisions and open questions
+- <material decision and rationale, or remaining uncertainty with investigation status; link to evidence and identify any decision needed from the user>
 
 ## Next steps
-1. <next concrete action>
-2. <following action, if known>
-
-## Deferred work note
-- <what is explicitly not done in this task>
+1. <immediate action or blocker; refer to a milestone where applicable>

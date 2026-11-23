@@ -39,7 +39,7 @@ Do not equate textual equality with correct repository-specific mappings, or lab
 
 ## Phase 3: review
 
-Present the diff, source revision/content identity, verification results, and any remaining issues or deliberate deviations. Follow the existing review/debug loop and wait for approval before closeout.
+Present the diff, source revision/content identity, verification results, and any remaining issues or deliberate deviations. Verify outcomes against the acceptance checks under the existing working agreement and wait for approval before closeout.
 
 ## Phase 4: close out
 

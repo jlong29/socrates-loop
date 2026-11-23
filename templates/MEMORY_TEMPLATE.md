@@ -3,14 +3,13 @@
 **Task:** <task_slug or short title>
 **Last updated:** <YYYY-MM-DD HH:MM>
 
-## Repro commands
--
+Keep evidence needed to understand decisions and verify outcomes. Omit unused investigation sections; link to durable evidence and do not duplicate the task brief or Git diffs.
 
-## Hypotheses + evidence
--
-
-## Failed experiments
--
+## Investigation (when needed)
+- Hypothesis / question: <testable explanation or uncertainty>
+- Check: <experiment or comparison and predicted observations that could distinguish explanations>
+- Evidence: <commands/conditions and observed results, or links to reproducible evidence>
+- Conclusion: <what the evidence supports or contradicts; rejected explanations and remaining uncertainty>
 
 ## Gotchas discovered (reconcile with maintained owners)
 
@@ -32,5 +31,5 @@ Delete this section if no bugs affect significant behavior. Otherwise, use the s
 - Follow-up:
 
 ## Verification run
-- Command(s):
-- Outcome(s):
+- <command and relevant environment; expected and observed outcome>
+- <unverified behavior, limitations or follow-up checks>
